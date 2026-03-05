@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>药品信息列表</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="../../layui/css/layui.css">
+	<style>
+		body, html {
+			margin: 0; padding: 0; background-color: #f5f8fa;
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+			min-height: 100vh;
+		}
+
+		.list-container {
+			max-width: 1400px; margin: 0 auto; padding: 30px 20px; box-sizing: border-box;
+		}
+
+		.page-title {
+			font-size: 22px; color: #1e293b; font-weight: 600; margin-bottom: 20px; display: flex; align-items: center;
+		}
+		.page-title::before {
+			content: ''; display: block; width: 5px; height: 20px;
+			background: linear-gradient(135deg, #00b4db 0%, #008476 100%); border-radius: 4px; margin-right: 12px;
+		}
+
+		/* 搜索区域 */
+		.search-bar {
+			background: #ffffff; padding: 20px 25px; border-radius: 16px;
+			box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03); margin-bottom: 30px;
+			display: flex; flex-wrap: wrap; align-items: center; gap: 15px;
+		}
+		.search-bar .layui-input {
+			width: 240px; height: 42px; border-radius: 8px; border: 1px solid #e2e8f0;
+			background-color: #f8fafc; color: #334155; transition: all 0.3s;
+		}
+		.search-bar .layui-input:focus {
+			background-color: #ffffff; border-color: #008476; box-shadow: 0 0 0 3px rgba(0, 132, 118, 0.1);
+		}
+		.search-btn {
+			height: 42px; padding: 0 25px; border-radius: 8px; background: #008476; color: #fff;
+			border: none; font-size: 14px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 5px;
+		}
+		.search-btn:hover { background: #006b5e; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 132, 118, 0.2); }
+
+		.add-btn {
+			height: 42px; padding: 0 25px; border-radius: 8px; background: #ffffff; color: #008476;
+			border: 1px solid #008476; font-size: 14px; cursor: pointer; transition: all 0.3s;
+			display: flex; align-items: center; gap: 5px; margin-left: auto;
+		}
+		.add-btn:hover { background: rgba(0, 132, 118, 0.05); transform: translateY(-2px); }
+
+		/* 网格卡片 */
+		.data-grid {
+			display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; margin-bottom: 40px;
+		}
+
+		.item-card {
+			background: #ffffff; border-radius: 16px; overflow: hidden;
+			box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03); transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+			text-decoration: none; display: flex; flex-direction: column; cursor: pointer;
+		}
+		.item-card:hover {
+			transform: translateY(-8px); box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+		}
+
+		.card-img-wrap {
+			width: 100%; height: 220px; overflow: hidden; background-color: #f1f5f9; display: flex; align-items: center; justify-content: center;
+		}
+		.card-img-wrap img {
+			width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;
+		}
+		.item-card:hover .card-img-wrap img { transform: scale(1.05); }
+
+		.card-content { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+		.card-title {
+			font-size: 18px; color: #1e293b; font-weight: 600; margin-bottom: 12px; transition: color 0.3s;
+			white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+		}
+		.item-card:hover .card-title { color: #008476; }
+
+		.card-info { font-size: 14px; color: #64748b; margin-bottom: 8px; display: flex; align-items: center; }
+		.card-info i { margin-right: 6px; color: #94a3b8; font-size: 16px; }
+
+		.card-price {
+			margin-top: auto; padding-top: 15px; border-top: 1px dashed #f1f5f9; font-size: 20px; color: #ef4444; font-weight: bold;
+		}
+
+		/* Layui 分页器 */
+		.layui-laypage { display: block; text-align: center; }
+		.layui-laypage a, .layui-laypage span { border-radius: 8px !important; margin: 0 5px; border: none; background: #ffffff; box-shadow: 0 2px 10px rgba(0,0,0,0.02); color: #64748b; }
+		.layui-laypage .layui-laypage-curr .layui-laypage-em { background-color: #008476; border-radius: 8px !important; }
+	</style>
+</head>
+<body>
+<div id="app" class="list-container">
+	<div class="page-title">线上药房 / 药品信息</div>
+
+	<div class="search-bar">
+		<div>
+			<input type="text" name="yaopinmingcheng" id="yaopinmingcheng" autocomplete="off" class="layui-input" placeholder="输入药品名称搜索">
+		</div>
+		<button class="search-btn" id="btn-search"><i class="layui-icon layui-icon-search"></i> 搜索药品</button>
+
+		<button v-if="isAuth('yaopinxinxi','新增')" @click="jump('../yaopinxinxi/add.html')" class="add-btn">
+			<i class="layui-icon layui-icon-add-1"></i> 药品上架
+		</button>
+	</div>
+
+	<div class="data-grid">
+		<a v-for="(item,index) in dataList" :key="index" @click="jump('../yaopinxinxi/detail.html?id='+item.id)" class="item-card">
+			<div class="card-img-wrap">
+				<img :src="item.tupian ? baseurl + item.tupian.split(',')[0] : '../../layui/images/face/0.gif'">
+			</div>
+			<div class="card-content">
+				<div class="card-title" :title="item.yaopinmingcheng">{{item.yaopinmingcheng}}</div>
+				<div class="card-info" v-if="item.yaopinfenlei">
+					<i class="layui-icon layui-icon-app"></i>分类: {{item.yaopinfenlei}}
+				</div>
+				<div class="card-info" v-if="item.guige">
+					<i class="layui-icon layui-icon-tabs"></i>规格: {{item.guige}}
+				</div>
+				<div class="card-info" v-if="item.shengchanshang">
+					<i class="layui-icon layui-icon-home"></i>厂商: {{item.shengchanshang}}
+				</div>
+				<div class="card-price" v-if="item.jiage">￥{{item.jiage}}</div>
+			</div>
+		</a>
+	</div>
+
+	<div v-if="dataList.length === 0" style="text-align: center; padding: 50px 0; color: #94a3b8; background: #fff; border-radius: 16px;">
+		<i class="layui-icon layui-icon-search" style="font-size: 40px; display: block; margin-bottom: 10px;"></i>
+		暂无相关药品信息
+	</div>
+
+	<div class="pager" id="pager" tabindex="0"></div>
+</div>
+
+<script src="../../layui/layui.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/config.js"></script>
+<script src="../../modules/config.js"></script>
+<script src="../../js/utils.js"></script>
+
+<script type="text/javascript">
+	var vue = new Vue({
+		el: '#app',
+		data: {
+			baseurl: '',
+			yaopinfenleiOptions: [],
+			dataList: []
+		},
+		methods: {
+			isAuth(tablename, button) { return isFrontAuth(tablename, button); },
+			jump(url) { jump(url); }
+		}
+	});
+
+	layui.use(['layer', 'element', 'laypage', 'http', 'jquery'], function() {
+		var layer = layui.layer;
+		var laypage = layui.laypage;
+		var http = layui.http;
+		var jquery = layui.jquery;
+
+		vue.baseurl = http.baseurl;
+
+		// 获取分类字典 (如有需要解开上方HTML注释即可联动)
+		http.request(`option/yaopinfenlei/yaopinfenlei`,'get',{},(res)=>{
+			vue.yaopinfenleiOptions = res.data;
+		});
+
+		var limit = 12;
+
+		function getDataList(page) {
+			var param = { page: page, limit: limit }
+			if (jquery('#yaopinmingcheng').val()) {
+				param['yaopinmingcheng'] = '%' + jquery('#yaopinmingcheng').val() + '%';
+			}
+
+			http.request('yaopinxinxi/list', 'get', param, function(res) {
+				for(let i=0; i<res.data.list.length; i++) {
+					if(res.data.list[i].tupian) {
+						res.data.list[i].tupian = res.data.list[i].tupian.replace(http.baseurl, "");
+					}
+				}
+				vue.dataList = res.data.list;
+
+				laypage.render({
+					elem: 'pager', count: res.data.total, limit: limit, curr: page,
+					groups: 5, layout: ['prev', 'page', 'next', 'skip'], theme: '#008476',
+					jump: function(obj, first) {
+						if (!first) { getDataList(obj.curr); }
+					}
+				});
+			})
+		}
+
+		getDataList(1);
+		jquery('#btn-search').click(function(e) { getDataList(1); });
+	});
+</script>
+</body>
+</html>

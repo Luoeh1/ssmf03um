@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>诊疗预约列表</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="../../layui/css/layui.css">
+	<style>
+		body, html {
+			margin: 0;
+			padding: 0;
+			background-color: #f5f8fa;
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+			min-height: 100vh;
+		}
+
+		/* 页面居中主容器 */
+		.list-container {
+			max-width: 1400px;
+			margin: 0 auto;
+			padding: 30px 20px;
+			box-sizing: border-box;
+		}
+
+		/* 顶部面包屑/标题 */
+		.page-title {
+			font-size: 22px;
+			color: #1e293b;
+			font-weight: 600;
+			margin-bottom: 20px;
+			display: flex;
+			align-items: center;
+		}
+		.page-title::before {
+			content: '';
+			display: block;
+			width: 5px;
+			height: 20px;
+			background: linear-gradient(135deg, #00b4db 0%, #008476 100%);
+			border-radius: 4px;
+			margin-right: 12px;
+		}
+
+		/* 搜索区域高级样式 */
+		.search-bar {
+			background: #ffffff;
+			padding: 20px 25px;
+			border-radius: 16px;
+			box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+			margin-bottom: 30px;
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			gap: 15px;
+		}
+
+		.search-bar .layui-input {
+			width: 240px;
+			height: 42px;
+			border-radius: 8px;
+			border: 1px solid #e2e8f0;
+			background-color: #f8fafc;
+			color: #334155;
+			transition: all 0.3s ease;
+			display: inline-block;
+		}
+		.search-bar .layui-input:focus {
+			background-color: #ffffff;
+			border-color: #008476;
+			box-shadow: 0 0 0 3px rgba(0, 132, 118, 0.1);
+		}
+
+		.search-btn {
+			height: 42px;
+			padding: 0 25px;
+			border-radius: 8px;
+			background: #008476;
+			color: #fff;
+			border: none;
+			font-size: 14px;
+			cursor: pointer;
+			transition: all 0.3s;
+			display: flex;
+			align-items: center;
+			gap: 5px;
+		}
+		.search-btn:hover {
+			background: #006b5e;
+			transform: translateY(-2px);
+			box-shadow: 0 4px 12px rgba(0, 132, 118, 0.2);
+		}
+
+		.add-btn {
+			height: 42px;
+			padding: 0 25px;
+			border-radius: 8px;
+			background: #ffffff;
+			color: #008476;
+			border: 1px solid #008476;
+			font-size: 14px;
+			cursor: pointer;
+			transition: all 0.3s;
+			display: flex;
+			align-items: center;
+			gap: 5px;
+			margin-left: auto; /* 推到最右边 */
+		}
+		.add-btn:hover {
+			background: rgba(0, 132, 118, 0.05);
+			transform: translateY(-2px);
+		}
+
+		/* 核心列表网格布局 */
+		.data-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+			gap: 25px;
+			margin-bottom: 40px;
+		}
+
+		/* 单个诊疗卡片 */
+		.item-card {
+			background: #ffffff;
+			border-radius: 16px;
+			overflow: hidden;
+			box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+			transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+			text-decoration: none;
+			display: flex;
+			flex-direction: column;
+			cursor: pointer;
+			position: relative;
+		}
+
+		.item-card:hover {
+			transform: translateY(-8px);
+			box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+		}
+
+		.card-img-wrap {
+			width: 100%;
+			height: 220px; /* 固定高度，保证列表整齐 */
+			overflow: hidden;
+			background-color: #f1f5f9;
+		}
+
+		.card-img-wrap img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			transition: transform 0.5s ease;
+		}
+
+		.item-card:hover .card-img-wrap img {
+			transform: scale(1.05);
+		}
+
+		.card-content {
+			padding: 20px;
+			flex-grow: 1;
+			display: flex;
+			flex-direction: column;
+		}
+
+		.card-title {
+			font-size: 18px;
+			color: #1e293b;
+			font-weight: 600;
+			margin-bottom: 12px;
+			transition: color 0.3s;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+
+		.item-card:hover .card-title {
+			color: #008476;
+		}
+
+		.card-info {
+			font-size: 14px;
+			color: #64748b;
+			margin-bottom: 8px;
+			display: flex;
+			align-items: center;
+		}
+		.card-info i {
+			margin-right: 6px;
+			color: #94a3b8;
+			font-size: 16px;
+		}
+
+		.card-price {
+			margin-top: auto;
+			padding-top: 15px;
+			border-top: 1px dashed #f1f5f9;
+			font-size: 18px;
+			color: #ef4444; /* 醒目的红色价格 */
+			font-weight: bold;
+		}
+
+		/* Layui 分页器重写居中 */
+		.layui-laypage {
+			display: block;
+			text-align: center;
+		}
+		.layui-laypage a, .layui-laypage span {
+			border-radius: 8px !important;
+			margin: 0 5px;
+			border: none;
+			background: #ffffff;
+			box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+			color: #64748b;
+		}
+		.layui-laypage .layui-laypage-curr .layui-laypage-em {
+			background-color: #008476;
+			border-radius: 8px !important;
+		}
+	</style>
+</head>
+<body>
+<div id="app" class="list-container">
+	<div class="page-title">诊疗浏览</div>
+
+	<div class="search-bar">
+		<div>
+			<input type="text" name="xiangmumingcheng" id="xiangmumingcheng" autocomplete="off" class="layui-input" placeholder="输入诊疗名称搜索">
+		</div>
+		<button class="search-btn" id="btn-search"><i class="layui-icon layui-icon-search"></i> 搜索</button>
+
+		<button v-if="isAuth('xiangmuxinxi','新增')" @click="jump('../xiangmuxinxi/add.html')" class="add-btn">
+			<i class="layui-icon layui-icon-add-1"></i> 发布诊疗
+		</button>
+	</div>
+
+	<div class="data-grid">
+		<a v-for="(item,index) in dataList" :key="index" @click="jump('../xiangmuxinxi/detail.html?id='+item.id)" class="item-card">
+			<div class="card-img-wrap">
+				<img :src="item.tupian ? baseurl + item.tupian.split(',')[0] : '../../layui/images/face/0.gif'">
+			</div>
+			<div class="card-content">
+				<div class="card-title">{{item.xiangmumingcheng}}</div>
+				<div class="card-info" v-if="item.xiangmufenlei">
+					<i class="layui-icon layui-icon-app"></i>分类：{{item.xiangmufenlei}}
+				</div>
+				<div class="card-info" v-if="item.keshi">
+					<i class="layui-icon layui-icon-tabs"></i>科室：{{item.keshi}}
+				</div>
+				<div class="card-price" v-if="item.jiage">￥{{item.jiage}}</div>
+			</div>
+		</a>
+	</div>
+
+	<div v-if="dataList.length === 0" style="text-align: center; padding: 50px 0; color: #94a3b8; background: #fff; border-radius: 16px;">
+		<i class="layui-icon layui-icon-search" style="font-size: 40px; display: block; margin-bottom: 10px;"></i>
+		暂无相关诊疗数据
+	</div>
+
+	<div class="pager" id="pager" tabindex="0"></div>
+</div>
+
+<script src="../../layui/layui.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/config.js"></script>
+<script src="../../modules/config.js"></script>
+<script src="../../js/utils.js"></script>
+
+<script type="text/javascript">
+	var vue = new Vue({
+		el: '#app',
+		data: {
+			baseurl: '',
+			swiperList: [],
+			xiangmufenleiOptions: [],
+			dataList: []
+		},
+		filters: {
+			newsDesc: function(val) {
+				if (val) {
+					if (val.length > 60) {
+						return val.substring(0, 60).replace(/<[^>]+>/g,"") + '...';
+					} else {
+						return val.replace(/<[^>]+>/g,"");
+					}
+				}
+				return '';
+			}
+		},
+		methods: {
+			isAuth(tablename, button) {
+				return isFrontAuth(tablename, button);
+			},
+			jump(url) {
+				jump(url);
+			}
+		}
+	});
+
+	layui.use(['layer', 'element', 'carousel', 'laypage', 'http', 'jquery', 'laydate'], function() {
+		var layer = layui.layer;
+		var element = layui.element;
+		var carousel = layui.carousel;
+		var laypage = layui.laypage;
+		var http = layui.http;
+		var jquery = layui.jquery;
+		var laydate = layui.laydate;
+
+		vue.baseurl = http.baseurl;
+
+		// 获取分类字典
+		http.request(`option/xiangmufenlei/xiangmufenlei`,'get',{},(res)=>{
+			vue.xiangmufenleiOptions = res.data;
+		});
+
+		var limit = 12; // 网格布局建议12个一页(可以被2,3,4整除)
+
+		// 获取数据列表
+		function getDataList(page) {
+			var param = {
+				page: page,
+				limit: limit
+			}
+			if (jquery('#xiangmumingcheng').val()) {
+				param['xiangmumingcheng'] = '%' + jquery('#xiangmumingcheng').val() + '%';
+			}
+
+			http.request('xiangmuxinxi/list', 'get', param, function(res) {
+				// 清洗图片路径
+				for(let i=0; i<res.data.list.length; i++) {
+					if(res.data.list[i].tupian) {
+						res.data.list[i].tupian = res.data.list[i].tupian.replace(http.baseurl, "");
+					}
+				}
+				vue.dataList = res.data.list;
+
+				// 渲染分页
+				laypage.render({
+					elem: 'pager',
+					count: res.data.total,
+					limit: limit,
+					curr: page,
+					groups: 5,
+					layout: ['prev', 'page', 'next', 'skip'],
+					theme: '#008476',
+					jump: function(obj, first) {
+						if (!first) {
+							getDataList(obj.curr);
+						}
+					}
+				});
+			})
+		}
+
+		// 初始化加载第一页
+		getDataList(1);
+
+		// 搜索按钮点击事件
+		jquery('#btn-search').click(function(e) {
+			getDataList(1);
+		});
+	});
+</script>
+</body>
+</html>

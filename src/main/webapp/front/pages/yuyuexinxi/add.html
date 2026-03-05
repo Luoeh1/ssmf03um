@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<title>填写预约信息</title>
+	<link rel="stylesheet" href="../../layui/css/layui.css">
+	<style>
+		body, html {
+			margin: 0;
+			padding: 0;
+			background-color: #f5f8fa;
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+			min-height: 100vh;
+		}
+
+		/* 居中表单容器 */
+		.add-container {
+			max-width: 800px;
+			margin: 40px auto;
+			background: #ffffff;
+			border-radius: 20px;
+			box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+			padding: 40px 50px;
+			box-sizing: border-box;
+		}
+
+		.page-title {
+			font-size: 24px;
+			color: #1e293b;
+			font-weight: 600;
+			margin-bottom: 30px;
+			text-align: center;
+			letter-spacing: 1px;
+			position: relative;
+			padding-bottom: 15px;
+		}
+		.page-title::after {
+			content: '';
+			position: absolute;
+			bottom: 0;
+			left: 50%;
+			transform: translateX(-50%);
+			width: 40px;
+			height: 4px;
+			background: linear-gradient(90deg, #00b4db, #008476);
+			border-radius: 2px;
+		}
+
+		/* Layui 表单重写 */
+		.layui-form-item {
+			margin-bottom: 22px;
+		}
+		.layui-form-label {
+			width: 110px;
+			padding: 12px 15px 12px 0;
+			font-size: 15px;
+			color: #475569;
+			font-weight: 500;
+		}
+		.layui-input-block {
+			margin-left: 125px;
+		}
+
+		.layui-input, .layui-textarea, .layui-select {
+			border-radius: 10px !important;
+			border: 1px solid #e2e8f0;
+			background-color: #f8fafc;
+			color: #334155;
+			padding-left: 15px;
+			transition: all 0.3s;
+		}
+		.layui-input:focus, .layui-textarea:focus {
+			background-color: #ffffff;
+			border-color: #008476;
+			box-shadow: 0 0 0 3px rgba(0, 132, 118, 0.1);
+		}
+
+		/* 只读/禁用状态框的样式 */
+		.layui-input[readonly], .layui-input[disabled] {
+			background-color: #eef2f5 !important;
+			color: #94a3b8;
+			cursor: not-allowed;
+			border-color: #e2e8f0 !important;
+		}
+
+		/* 按钮样式 */
+		.btn-container {
+			text-align: center;
+			margin-top: 40px;
+		}
+		.btn-submit {
+			background: linear-gradient(135deg, #00b4db 0%, #008476 100%);
+			color: white;
+			border: none;
+			padding: 0 45px;
+			height: 50px;
+			border-radius: 10px;
+			font-size: 16px;
+			font-weight: 600;
+			letter-spacing: 2px;
+			cursor: pointer;
+			box-shadow: 0 6px 15px rgba(0, 132, 118, 0.3);
+			transition: all 0.3s;
+			display: inline-block;
+		}
+		.btn-submit:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 8px 20px rgba(0, 132, 118, 0.4);
+		}
+		.btn-back {
+			background: #ffffff;
+			color: #64748b;
+			border: 1px solid #cbd5e1;
+			padding: 0 35px;
+			height: 50px;
+			border-radius: 10px;
+			font-size: 16px;
+			cursor: pointer;
+			transition: all 0.3s;
+			margin-left: 20px;
+			display: inline-block;
+		}
+		.btn-back:hover {
+			color: #1e293b;
+			border-color: #94a3b8;
+			background: #f8fafc;
+		}
+
+		/* 响应式 */
+		@media (max-width: 768px) {
+			.add-container { margin: 20px; padding: 30px 20px; }
+			.layui-form-label { display: block; text-align: left; width: 100%; padding-bottom: 5px; }
+			.layui-input-block { margin-left: 0; }
+			.btn-back { margin-left: 0; margin-top: 15px; display: block; width: 100%; }
+			.btn-submit { display: block; width: 100%; }
+		}
+	</style>
+</head>
+<body>
+
+<div id="app">
+	<div class="add-container">
+		<div class="page-title">在线预约申请</div>
+		<form class="layui-form layui-form-pane" lay-filter="myForm">
+			<!-- 保留原代码所有核心字段 + 新增字段 -->
+			<div class="layui-form-item" pane>
+				<label class="layui-form-label">预约编号：</label>
+				<div class="layui-input-block">
+					<input v-model="detail.yuyuebianhao" type="text" :readonly="ro.yuyuebianhao" name="yuyuebianhao" id="yuyuebianhao" autocomplete="off" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item" pane>
+				<label class="layui-form-label">诊疗名称：</label>
+				<div class="layui-input-block">
+					<input v-model="detail.xiangmumingcheng" type="text" :readonly="ro.xiangmumingcheng" name="xiangmumingcheng" id="xiangmumingcheng" autocomplete="off" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item" pane>
+				<label class="layui-form-label">诊疗分类：</label>
+				<div class="layui-input-block">
+					<input v-model="detail.xiangmufenlei" type="text" :readonly="ro.xiangmufenlei" name="xiangmufenlei" id="xiangmufenlei" autocomplete="off" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item" pane>
+				<label class="layui-form-label">科室：</label>
+				<div class="layui-input-block">
+					<input v-model="detail.keshi" type="text" :readonly="ro.keshi" name="keshi" id="keshi" autocomplete="off" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item" pane>
+				<label class="layui-form-label">预约时间：</label>
+				<div class="layui-input-block">
+					<input v-model="detail.yuyueshijian" type="text" name="yuyueshijian" id="yuyueshijian" autocomplete="off" class="layui-input" placeholder="请选择预约时间">
+				</div>
+			</div>
+			<div class="layui-form-item" pane>
+				<label class="layui-form-label">用户账号：</label>
+				<div class="layui-input-block">
+					<input v-model="detail.yonghuzhanghao" type="text" :readonly="ro.yonghuzhanghao" name="yonghuzhanghao" id="yonghuzhanghao" autocomplete="off" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item" pane>
+				<label class="layui-form-label">费用：</label>
+				<div class="layui-input-block">
+					<input v-model="detail.feiyong" type="text" :readonly="ro.feiyong" name="feiyong" id="feiyong" autocomplete="off" class="layui-input" placeholder="请输入整数金额">
+				</div>
+			</div>
+			<div class="layui-form-item" pane>
+				<label class="layui-form-label">用户姓名：</label>
+				<div class="layui-input-block">
+					<input v-model="detail.yonghuxingming" type="text" :readonly="ro.yonghuxingming" name="yonghuxingming" id="yonghuxingming" autocomplete="off" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item" pane>
+				<label class="layui-form-label">医生工号：</label>
+				<div class="layui-input-block">
+					<input v-model="detail.yishenggonghao" type="text" :readonly="ro.yishenggonghao" name="yishenggonghao" id="yishenggonghao" autocomplete="off" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item" pane>
+				<label class="layui-form-label">医生姓名：</label>
+				<div class="layui-input-block">
+					<input v-model="detail.yishengxingming" type="text" :readonly="ro.yishengxingming" name="yishengxingming" id="yishengxingming" autocomplete="off" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item" pane>
+				<label class="layui-form-label">手机：</label>
+				<div class="layui-input-block">
+					<input v-model="detail.shouji" type="text" :readonly="ro.shouji" name="shouji" id="shouji" autocomplete="off" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item" pane>
+				<label class="layui-form-label">身份证：</label>
+				<div class="layui-input-block">
+					<input v-model="detail.shenfenzheng" type="text" :readonly="ro.shenfenzheng" name="shenfenzheng" id="shenfenzheng" autocomplete="off" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item" pane>
+				<label class="layui-form-label">预约内容：</label>
+				<div class="layui-input-block">
+					<textarea v-model="detail.yuyueneirong" name="yuyueneirong" id="yuyueneirong" class="layui-textarea" placeholder="请填写详细的预约需求或病症描述..."></textarea>
+				</div>
+			</div>
+
+			<div class="btn-container">
+				<button class="btn-submit" lay-submit lay-filter="*">提交预约申请</button>
+				<button type="button" class="btn-back" @click="back()">返回上一页</button>
+			</div>
+		</form>
+	</div>
+</div>
+
+<script src="../../layui/layui.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/config.js"></script>
+<script src="../../modules/config.js"></script>
+<script src="../../js/utils.js"></script>
+<script src="../../js/validate.js"></script>
+<!-- 补充原代码的jquery依赖（日期赋值需要） -->
+<script src="../../js/jquery.js"></script>
+
+<script>
+	var jquery = $;
+	var vue = new Vue({
+		el: '#app',
+		data: {
+			swiperList: [],
+			detail: {
+				// 保留原代码所有字段
+				yuyuebianhao: genTradeNo(),
+				xiangmumingcheng: '',
+				xiangmufenlei: '',
+				keshi: '',
+				yuyueshijian: '',
+				yonghuzhanghao: '',
+				feiyong: '',
+				yonghuxingming: '',
+				yishenggonghao: '',
+				yishengxingming: '',
+				shouji: '',
+				shenfenzheng: '',
+				yuyueneirong: '',
+				sfsh: '',
+				shhf: '',
+				ispay: '',
+			},
+			ro:{
+				// 保留原代码所有只读配置
+				yuyuebianhao : false,
+				xiangmumingcheng : false,
+				xiangmufenlei : false,
+				keshi : false,
+				yuyueshijian : false,
+				yonghuzhanghao : false,
+				feiyong : false,
+				yonghuxingming : false,
+				yishenggonghao : false,
+				yishengxingming : false,
+				shouji : false,
+				shenfenzheng : false,
+				sfsh : false,
+				shhf : false,
+				ispay : false,
+			},
+			centerMenu: false,
+			baseurl: ''
+		},
+		updated: function() {
+			// 修复Vue更新后表单不渲染问题
+			layui.form.render('select', 'myForm');
+		},
+		methods: {
+			jump(url) {
+				jump(url)
+			},
+			back() {
+				// 兼容原代码的back函数
+				if (typeof back === 'function') {
+					back();
+				} else {
+					window.history.back();
+				}
+			}
+		}
+	})
+
+	layui.use(['layer', 'element', 'carousel', 'http', 'jquery', 'form', 'upload', 'laydate','tinymce'], function() {
+		var layer = layui.layer;
+		var element = layui.element;
+		var carousel = layui.carousel;
+		var http = layui.http;
+		var jquery = layui.jquery;
+		var form = layui.form;
+		var upload = layui.upload;
+		var laydate = layui.laydate;
+		var tinymce = layui.tinymce;
+		vue.baseurl = http.baseurl;
+
+		// 原代码轮播图逻辑（保留）
+		http.request('config/list', 'get', {
+			page: 1,
+			limit: 5
+		}, function(res) {
+			if (res.data.list.length > 0) {
+				var swiperItemHtml = '';
+				for (let item of res.data.list) {
+					if (item.name.indexOf('picture') >= 0 && item.value && item.value != "" && item.value != null) {
+						vue.swiperList.push({
+							img: http.baseurl + item.value
+						});
+					}
+				}
+			}
+		});
+
+		// 日期控件初始化 + 原代码默认日期赋值
+		jquery('#yuyueshijian').val(getCurDate() || '');
+		laydate.render({
+			elem: '#yuyueshijian',
+			type: 'datetime',
+			done: function(value) {
+				// 选择日期后同步到Vue数据
+				vue.detail.yuyueshijian = value;
+			}
+		});
+
+		// 原代码session赋值逻辑（修复字段名对应）
+		let table = localStorage.getItem("userTable");
+		http.request(`${table}/session`, 'get', {}, function(data) {
+			data = data.data;
+			for (var key in data){
+				if(key=='yonghuzhanghao'){
+					vue.detail.yonghuzhanghao = data[key];
+					vue.ro.yonghuzhanghao = true;
+					continue;
+				}
+				if(key=='yonghuxingming'){
+					vue.detail.yonghuxingming = data[key];
+					vue.ro.yonghuxingming = true;
+					continue;
+				}
+				// 新增字段的session赋值
+				if(key=='shouji'){
+					vue.detail.shouji = data[key];
+					vue.ro.shouji = true;
+					continue;
+				}
+				if(key=='shenfenzheng'){
+					vue.detail.shenfenzheng = data[key];
+					vue.ro.shenfenzheng = true;
+					continue;
+				}
+			}
+		});
+
+		// 原代码跨表逻辑（修复参数拼写错误corss->cross）
+		if(http.getParam('cross')){
+			var obj = JSON.parse(localStorage.getItem('crossObj'));
+			for (var o in obj){
+				// 遍历所有原字段 + 新增字段
+				if(o=='yuyuebianhao'){
+					vue.detail[o] = obj[o];
+					vue.ro.yuyuebianhao = true;
+					continue;
+				}
+				if(o=='xiangmumingcheng'){
+					vue.detail[o] = obj[o];
+					vue.ro.xiangmumingcheng = true;
+					continue;
+				}
+				if(o=='xiangmufenlei'){
+					vue.detail[o] = obj[o];
+					vue.ro.xiangmufenlei = true;
+					continue;
+				}
+				if(o=='yuyueshijian'){
+					vue.detail[o] = obj[o];
+					vue.ro.yuyueshijian = true;
+					jquery('#yuyueshijian').val(obj[o]);
+					continue;
+				}
+				if(o=='yonghuzhanghao'){
+					vue.detail[o] = obj[o];
+					vue.ro.yonghuzhanghao = true;
+					continue;
+				}
+				if(o=='feiyong'){
+					vue.detail[o] = obj[o];
+					vue.ro.feiyong = true;
+					continue;
+				}
+				if(o=='yonghuxingming'){
+					vue.detail[o] = obj[o];
+					vue.ro.yonghuxingming = true;
+					continue;
+				}
+				if(o=='yishenggonghao'){
+					vue.detail[o] = obj[o];
+					vue.ro.yishenggonghao = true;
+					continue;
+				}
+				if(o=='yishengxingming'){
+					vue.detail[o] = obj[o];
+					vue.ro.yishengxingming = true;
+					continue;
+				}
+				if(o=='keshi'){
+					vue.detail[o] = obj[o];
+					vue.ro.keshi = true;
+					continue;
+				}
+			}
+		}
+
+		// 提交表单（修复核心逻辑）
+		form.on('submit(*)', function(data) {
+			data = data.field;
+
+			// 1. 原代码费用整数校验
+			if(data.feiyong && !isIntNumer(data.feiyong)){
+				layer.msg('费用应输入整数', {
+					time: 2000,
+					icon: 5
+				});
+				return false;
+			}
+
+			// 2. 补充手机/身份证简单校验
+			if(data.shouji && !/^1[3-9]\d{9}$/.test(data.shouji)){
+				layer.msg('请输入正确的手机号码', {
+					time: 2000,
+					icon: 5
+				});
+				return false;
+			}
+			if(data.shenfenzheng && !/^\d{17}[\dXx]$|^\d{15}$/.test(data.shenfenzheng)){
+				layer.msg('请输入正确的身份证号码', {
+					time: 2000,
+					icon: 5
+				});
+				return false;
+			}
+
+			// 3. 跨表逻辑（还原原代码的list接口，page改为list）
+			var crossuserid;
+			var crossrefid;
+			var crossoptnum;
+			if(http.getParam('cross')){
+				var statusColumnName = localStorage.getItem('statusColumnName');
+				var statusColumnValue = localStorage.getItem('statusColumnValue');
+				if(statusColumnName!='') {
+					var obj = JSON.parse(localStorage.getItem('crossObj'));
+					if(!statusColumnName.startsWith("[")) {
+						for (var o in obj){
+							if(o==statusColumnName){
+								obj[o] = statusColumnValue;
+							}
+						}
+						var table = localStorage.getItem('crossTable');
+						http.requestJson(`${table}/update`,'post',obj,(res)=>{});
+					} else {
+						crossuserid=Number(localStorage.getItem('userid'));
+						crossrefid=obj['id'];
+						crossoptnum=localStorage.getItem('statusColumnName');
+						crossoptnum=crossoptnum.replace(/\[/,"").replace(/\]/,"");
+					}
+				}
+			}
+
+			if(crossrefid && crossuserid) {
+				data.crossuserid=crossuserid;
+				data.crossrefid=crossrefid;
+				// 还原原代码的yuyuexinxi/list接口
+				http.request('yuyuexinxi/list', 'get', {
+					page: 1,
+					limit: 10,
+					crossuserid:crossuserid,
+					crossrefid:crossrefid,
+				}, function(res) {
+					if(res.data.total>=crossoptnum) {
+						layer.msg(localStorage.getItem('tips'), {
+							time: 2000,
+							icon: 6
+						})
+						return false;
+					} else {
+						// 提交数据（使用原代码的接口路径）
+						http.requestJson('yuyuexinxi/add', 'post', data, function(res) {
+							if(res.code === 0 || res.success) {
+								layer.msg('预约提交成功', {
+									time: 2000,
+									icon: 6
+								}, function() {
+									vue.back();
+								});
+							} else {
+								layer.msg('提交失败：' + (res.msg || '服务器错误'), {
+									time: 2000,
+									icon: 5
+								});
+							}
+						}, function(err) {
+							// 补充错误处理
+							layer.msg('网络错误，请重试', {
+								time: 2000,
+								icon: 5
+							});
+						});
+					}
+				});
+			} else {
+				// 普通提交逻辑
+				http.requestJson('yuyuexinxi/add', 'post', data, function(res) {
+					if(res.code === 0 || res.success) {
+						layer.msg('预约提交成功', {
+							time: 2000,
+							icon: 6
+						}, function() {
+							vue.back();
+						});
+					} else {
+						layer.msg('提交失败：' + (res.msg || '服务器错误'), {
+							time: 2000,
+							icon: 5
+						});
+					}
+				}, function(err) {
+					layer.msg('网络错误，请重试', {
+						time: 2000,
+						icon: 5
+					});
+				});
+			}
+			return false;
+		});
+	});
+</script>
+</body>
+</html>

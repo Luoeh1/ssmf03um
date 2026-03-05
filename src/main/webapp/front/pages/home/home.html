@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<title>系统首页</title>
+	<link rel="stylesheet" href="../../layui/css/layui.css">
+	<style>
+		body {
+			margin: 0;
+			background-color: #f5f8fa;
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+			overflow-x: hidden;
+			padding-bottom: 40px;
+		}
+
+		/* 轮播图高级样式 */
+		.swiper-container {
+			width: 100%;
+			height: 450px;
+			position: relative;
+			box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+		}
+		.layui-carousel img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+
+		/* 核心内容居中容器 */
+		.content-wrap {
+			max-width: 1400px;
+			margin: 0 auto;
+			padding: 40px 20px;
+			box-sizing: border-box;
+		}
+
+		/* 高级分栏标题 */
+		.section-title {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			margin-bottom: 30px;
+		}
+		.section-title h2 {
+			font-size: 24px;
+			color: #1e293b;
+			font-weight: 600;
+			margin: 0;
+			position: relative;
+			padding-left: 15px;
+		}
+		.section-title h2::before {
+			content: '';
+			position: absolute;
+			left: 0;
+			top: 50%;
+			transform: translateY(-50%);
+			width: 5px;
+			height: 20px;
+			background: #008476;
+			border-radius: 4px;
+		}
+		.section-title .more-link {
+			color: #64748b;
+			text-decoration: none;
+			font-size: 14px;
+			transition: color 0.3s;
+		}
+		.section-title .more-link:hover {
+			color: #008476;
+		}
+
+		/* 卡片网格布局 */
+		.card-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+			gap: 30px;
+		}
+
+		/* 极简风数据卡片 */
+		.data-card {
+			background: #ffffff;
+			border-radius: 16px;
+			overflow: hidden;
+			box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+			transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+			cursor: pointer;
+			text-decoration: none;
+			display: block;
+		}
+
+		.data-card:hover {
+			transform: translateY(-8px);
+			box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+		}
+
+		/* 卡片图片区 - 悬停微缩放 */
+		.card-img-wrap {
+			width: 100%;
+			height: 200px;
+			overflow: hidden;
+		}
+		.card-img-wrap img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			transition: transform 0.5s ease;
+		}
+		.data-card:hover .card-img-wrap img {
+			transform: scale(1.05);
+		}
+
+		/* 卡片内容区 */
+		.card-info {
+			padding: 20px;
+		}
+		.card-title {
+			font-size: 18px;
+			color: #334155;
+			font-weight: 600;
+			margin-bottom: 10px;
+			/* 单行截断 */
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+		.card-desc {
+			font-size: 14px;
+			color: #64748b;
+			line-height: 1.6;
+			/* 两行截断 */
+			display: -webkit-box;
+			-webkit-line-clamp: 2;
+			-webkit-box-orient: vertical;
+			overflow: hidden;
+			margin-bottom: 15px;
+		}
+		.card-bottom {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			border-top: 1px solid #f1f5f9;
+			padding-top: 15px;
+		}
+		.card-time {
+			font-size: 12px;
+			color: #94a3b8;
+		}
+		.card-action {
+			font-size: 13px;
+			color: #008476;
+			font-weight: 500;
+		}
+	</style>
+</head>
+<body>
+<div id="app">
+	<div class="swiper-container">
+		<div class="layui-carousel" id="swiper">
+			<div carousel-item id="swiper-item">
+				<div v-for="(item,index) in swiperList" :key="index">
+					<img class="swiper-img" :src="baseurl + item.img" alt="轮播图">
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="content-wrap">
+		<div class="section-title">
+			<h2>健康资讯与公告</h2>
+			<a href="javascript:navPage('../news/list.html')" class="more-link">查看更多 <i class="layui-icon layui-icon-right"></i></a>
+		</div>
+
+		<div class="card-grid">
+			<a href="javascript:void(0);" @click="jump('../news/detail.html?id='+item.id)" class="data-card" v-for="(item,index) in newsList" :key="index">
+				<div class="card-img-wrap">
+					<img :src="item.picture ? baseurl + item.picture.split(',')[0] : ''" alt="资讯图片">
+				</div>
+				<div class="card-info">
+					<div class="card-title">{{item.title}}</div>
+					<div class="card-desc">{{item.content|newsDesc}}</div>
+					<div class="card-bottom">
+						<span class="card-time"><i class="layui-icon layui-icon-time"></i> {{item.addtime ? item.addtime.split(' ')[0] : ''}}</span>
+						<span class="card-action">阅读全文 &rarr;</span>
+					</div>
+				</div>
+			</a>
+		</div>
+
+	</div>
+</div>
+
+<script src="../../layui/layui.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/config.js"></script>
+<script src="../../modules/config.js"></script>
+<script src="../../js/utils.js"></script>
+<script>
+	var vue = new Vue({
+		el: '#app',
+		data: {
+			baseurl: '',    // 用于给图片路径加前缀
+			swiperList: [], // 轮播图数据
+			newsList: []    // 新闻资讯数据
+		},
+		filters: {
+			// 用于清洗HTML标签并截取摘要的Vue过滤器
+			newsDesc: function(val) {
+				if (!val) return '';
+				var reg = /<[^>]+>/g;
+				var text = val.replace(reg, '');
+				return text.length > 60 ? text.substring(0, 60) + '...' : text;
+			}
+		},
+		methods: {
+			jump(url) {
+				jump(url)
+			}
+		}
+	});
+
+	layui.use(['layer', 'form', 'element', 'carousel', 'http', 'jquery'], function() {
+		var layer = layui.layer;
+		var element = layui.element;
+		var form = layui.form;
+		var carousel = layui.carousel;
+		var http = layui.http;
+		var jquery = layui.jquery;
+
+		// 初始化 baseurl
+		vue.baseurl = http.baseurl;
+
+		// 获取轮播图数据
+		http.request('config/list', 'get', {
+			page: 1,
+			limit: 5
+		}, function(res) {
+			if (res.data.list.length > 0) {
+				var swiperItemHtml = '';
+				for (let item of res.data.list) {
+					if (item.name.indexOf('picture') >= 0 && item.value && item.value != "" && item.value != null) {
+						vue.swiperList.push({
+							// 为了保证兼容性，去掉原路径可能自带的 baseurl（部分系统设计差异）
+							img: item.value.replace(http.baseurl, "")
+						});
+					}
+				}
+				vue.$nextTick(() => {
+					carousel.render({
+						elem: '#swiper',
+						width: '100%',
+						height: '450px',
+						arrow: 'hover',
+						anim: 'fade',
+						autoplay: true,
+						interval: 4000,
+						indicator: 'inside'
+					});
+				})
+			}
+		});
+
+		// 获取健康资讯（新闻）列表
+		http.request('news/list', 'get', {
+			page: 1,
+			limit: 6 // 首页展示6条
+		}, function(res) {
+			// 将数据中可能带有的 baseurl 替换为空，统一由前端按需拼接
+			for(let i=0; i<res.data.list.length; i++) {
+				if(res.data.list[i].picture) {
+					res.data.list[i].picture = res.data.list[i].picture.replace(http.baseurl, "");
+				}
+			}
+			vue.newsList = res.data.list;
+		});
+	});
+
+	// 供顶部更多按钮使用的跳转方法
+	function navPage(url) {
+		window.parent.navPage(url);
+	}
+</script>
+</body>
+</html>

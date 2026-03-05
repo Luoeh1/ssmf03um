@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>我的预约记录</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="../../layui/css/layui.css">
+	<style>
+		body, html {
+			margin: 0;
+			padding: 0;
+			background-color: #f5f8fa;
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+			min-height: 100vh;
+		}
+
+		.list-container {
+			max-width: 1400px;
+			margin: 0 auto;
+			padding: 30px 20px;
+			box-sizing: border-box;
+		}
+
+		.page-title {
+			font-size: 22px;
+			color: #1e293b;
+			font-weight: 600;
+			margin-bottom: 20px;
+			display: flex;
+			align-items: center;
+		}
+		.page-title::before {
+			content: '';
+			display: block;
+			width: 5px;
+			height: 20px;
+			background: linear-gradient(135deg, #00b4db 0%, #008476 100%);
+			border-radius: 4px;
+			margin-right: 12px;
+		}
+
+		/* 搜索栏美化 */
+		.search-bar {
+			background: #ffffff;
+			padding: 20px 25px;
+			border-radius: 16px;
+			box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+			margin-bottom: 30px;
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			gap: 15px;
+		}
+		.search-bar .layui-input {
+			width: 220px;
+			height: 42px;
+			border-radius: 8px;
+			border: 1px solid #e2e8f0;
+			background-color: #f8fafc;
+			color: #334155;
+			transition: all 0.3s;
+		}
+		.search-bar .layui-input:focus {
+			background-color: #ffffff;
+			border-color: #008476;
+			box-shadow: 0 0 0 3px rgba(0, 132, 118, 0.1);
+		}
+		.search-btn {
+			height: 42px;
+			padding: 0 25px;
+			border-radius: 8px;
+			background: #008476;
+			color: #fff;
+			border: none;
+			font-size: 14px;
+			cursor: pointer;
+			transition: all 0.3s;
+			display: flex;
+			align-items: center;
+			gap: 5px;
+		}
+		.search-btn:hover { background: #006b5e; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 132, 118, 0.2); }
+
+		/* 预约票券式列表网格 */
+		.ticket-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+			gap: 25px;
+			margin-bottom: 40px;
+		}
+
+		.ticket-card {
+			background: #ffffff;
+			border-radius: 16px;
+			box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+			transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+			position: relative;
+			border-left: 6px solid #008476; /* 左侧主题色条表示状态 */
+			display: flex;
+			flex-direction: column;
+		}
+		.ticket-card:hover {
+			transform: translateY(-5px);
+			box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+		}
+
+		/* 拒绝状态红色侧边 */
+		.ticket-card.status-reject { border-left-color: #ef4444; }
+		/* 待审核状态橙色侧边 */
+		.ticket-card.status-pending { border-left-color: #f59e0b; }
+
+		.ticket-header {
+			padding: 20px 25px 15px;
+			border-bottom: 1px dashed #e2e8f0;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+		.ticket-no { font-size: 13px; color: #94a3b8; }
+
+		/* 审核状态标签 */
+		.status-tag {
+			padding: 4px 12px;
+			border-radius: 20px;
+			font-size: 12px;
+			font-weight: 500;
+		}
+		.tag-pass { background: #dcfce7; color: #008476; }
+		.tag-reject { background: #fee2e2; color: #ef4444; }
+		.tag-pending { background: #fef3c7; color: #f59e0b; }
+
+		.ticket-body { padding: 20px 25px; flex-grow: 1; }
+		.item-name { font-size: 20px; color: #1e293b; font-weight: bold; margin-bottom: 10px; }
+		.dept-name { font-size: 14px; color: #008476; background: rgba(0,132,118,0.1); padding: 3px 10px; border-radius: 6px; display: inline-block; margin-bottom: 15px;}
+
+		.info-row { font-size: 14px; color: #64748b; margin-bottom: 8px; display: flex; align-items: center; }
+		.info-row i { margin-right: 8px; color: #cbd5e1; font-size: 16px; }
+
+		/* 底部操作区 */
+		.ticket-footer {
+			padding: 15px 25px;
+			background: #f8fafc;
+			border-radius: 0 0 16px 0;
+			display: flex;
+			justify-content: flex-end;
+			gap: 10px;
+		}
+		.btn-action {
+			background: #ffffff;
+			border: 1px solid #cbd5e1;
+			color: #475569;
+			padding: 6px 15px;
+			border-radius: 6px;
+			font-size: 13px;
+			cursor: pointer;
+			transition: all 0.3s;
+		}
+		.btn-action:hover { border-color: #008476; color: #008476; }
+		.btn-delete:hover { border-color: #ef4444; color: #ef4444; }
+
+		/* 分页器 */
+		.layui-laypage { display: block; text-align: center; }
+		.layui-laypage a, .layui-laypage span { border-radius: 8px !important; margin: 0 5px; border: none; background: #ffffff; box-shadow: 0 2px 10px rgba(0,0,0,0.02); color: #64748b; }
+		.layui-laypage .layui-laypage-curr .layui-laypage-em { background-color: #008476; border-radius: 8px !important; }
+	</style>
+</head>
+<body>
+<div id="app" class="list-container">
+	<div class="page-title">预约记录管理</div>
+
+	<div class="search-bar">
+		<div>
+			<input type="text" name="xiangmumingcheng" id="xiangmumingcheng" autocomplete="off" class="layui-input" placeholder="输入诊疗名称搜索">
+		</div>
+		<div>
+			<input type="text" name="keshi" id="keshi" autocomplete="off" class="layui-input" placeholder="输入科室名称搜索">
+		</div>
+		<button class="search-btn" id="btn-search"><i class="layui-icon layui-icon-search"></i> 搜索记录</button>
+	</div>
+
+	<div class="ticket-grid">
+		<div v-for="(item,index) in dataList" :key="index" class="ticket-card" :class="{'status-reject': item.sfsh=='否', 'status-pending': item.sfsh=='待审核'}">
+			<div class="ticket-header">
+				<span class="ticket-no">编号: {{item.yuyuebianhao}}</span>
+				<span class="status-tag tag-pass" v-if="item.sfsh=='是'">已通过</span>
+				<span class="status-tag tag-reject" v-if="item.sfsh=='否'">已拒绝</span>
+				<span class="status-tag tag-pending" v-if="item.sfsh=='待审核' || !item.sfsh">待审核</span>
+			</div>
+
+			<div class="ticket-body" @click="jump('../yuyuexinxi/detail.html?id='+item.id)" style="cursor: pointer;">
+				<div class="item-name">{{item.xiangmumingcheng}}</div>
+				<div class="dept-name" v-if="item.keshi">{{item.keshi}}</div>
+
+				<div class="info-row" v-if="item.yuyueshijian">
+					<i class="layui-icon layui-icon-time"></i> 预约时间: {{item.yuyueshijian}}
+				</div>
+				<div class="info-row" v-if="item.xingming">
+					<i class="layui-icon layui-icon-user"></i> 预约人: {{item.xingming}}
+				</div>
+				<div class="info-row" v-if="item.shhf" style="color: #ef4444; margin-top: 10px; background: #fef2f2; padding: 8px; border-radius: 6px;">
+					<i class="layui-icon layui-icon-notice" style="color:#ef4444;"></i> 回复: {{item.shhf}}
+				</div>
+			</div>
+
+			<div class="ticket-footer">
+				<button class="btn-action" @click="jump('../yuyuexinxi/detail.html?id='+item.id)">查看详情</button>
+
+				<button v-if="isAuth('yuyuexinxi','修改')" class="btn-action" @click="jump('../yuyuexinxi/add.html?id='+item.id)">修改</button>
+				<button v-if="isAuth('yuyuexinxi','删除')" class="btn-action btn-delete" @click="deleteData(item)">删除</button>
+			</div>
+		</div>
+	</div>
+
+	<div v-if="dataList.length === 0" style="text-align: center; padding: 60px 0; color: #94a3b8; background: #fff; border-radius: 16px;">
+		<i class="layui-icon layui-icon-form" style="font-size: 48px; display: block; margin-bottom: 15px;"></i>
+		暂无您的预约记录
+	</div>
+
+	<div class="pager" id="pager" tabindex="0"></div>
+</div>
+
+<script src="../../layui/layui.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/config.js"></script>
+<script src="../../modules/config.js"></script>
+<script src="../../js/utils.js"></script>
+
+<script type="text/javascript">
+	var vue = new Vue({
+		el: '#app',
+		data: {
+			baseurl: '',
+			dataList: []
+		},
+		methods: {
+			isAuth(tablename, button) {
+				return isFrontAuth(tablename, button);
+			},
+			jump(url) {
+				jump(url);
+			},
+			deleteData(item) {
+				var _this = this;
+				layui.layer.confirm('确认删除该预约记录吗？', function(index) {
+					layui.http.requestJson('yuyuexinxi/delete', 'post', [item.id], function(res) {
+						layui.layer.msg('删除成功', { time: 2000, icon: 6 });
+						// 刷新页面重新获取数据
+						window.location.reload();
+					});
+				});
+			}
+		}
+	});
+
+	layui.use(['layer', 'element', 'laypage', 'http', 'jquery'], function() {
+		var layer = layui.layer;
+		var element = layui.element;
+		var laypage = layui.laypage;
+		var http = layui.http;
+		var jquery = layui.jquery;
+
+		vue.baseurl = http.baseurl;
+		var limit = 10;
+
+		function getDataList(page) {
+			var param = {
+				page: page,
+				limit: limit
+			}
+			if (jquery('#xiangmumingcheng').val()) {
+				param['xiangmumingcheng'] = '%' + jquery('#xiangmumingcheng').val() + '%';
+			}
+			if (jquery('#keshi').val()) {
+				param['keshi'] = '%' + jquery('#keshi').val() + '%';
+			}
+
+			// 预约列表根据登录用户来过滤
+			http.request('yuyuexinxi/list', 'get', param, function(res) {
+				vue.dataList = res.data.list;
+
+				laypage.render({
+					elem: 'pager',
+					count: res.data.total,
+					limit: limit,
+					curr: page,
+					groups: 5,
+					layout: ['prev', 'page', 'next', 'skip'],
+					theme: '#008476',
+					jump: function(obj, first) {
+						if (!first) {
+							getDataList(obj.curr);
+						}
+					}
+				});
+			})
+		}
+
+		getDataList(1);
+
+		jquery('#btn-search').click(function(e) {
+			getDataList(1);
+		});
+	});
+</script>
+</body>
+</html>

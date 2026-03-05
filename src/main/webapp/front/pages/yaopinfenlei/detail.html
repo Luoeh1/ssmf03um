@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>药品分类详情</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="../../layui/css/layui.css">
+	<style>
+		body, html {
+			margin: 0; padding: 0; background-color: #f5f8fa;
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+			min-height: 100vh;
+		}
+
+		.detail-container { max-width: 600px; margin: 60px auto; padding: 0 20px; box-sizing: border-box; }
+
+		.breadcrumb { margin-bottom: 25px; font-size: 15px; color: #64748b; display: flex; align-items: center; }
+		.breadcrumb a { color: #475569; text-decoration: none; transition: color 0.3s; }
+		.breadcrumb a:hover { color: #008476; }
+		.breadcrumb span { margin: 0 10px; color: #cbd5e1; }
+
+		.simple-card {
+			background: #ffffff; border-radius: 20px; padding: 40px;
+			box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03); display: flex; flex-direction: column; align-items: center;
+		}
+
+		.icon-area {
+			width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, #00b4db 0%, #008476 100%);
+			display: flex; justify-content: center; align-items: center; margin-bottom: 20px;
+			box-shadow: 0 6px 15px rgba(0,132,118,0.2); color: white; font-size: 40px;
+		}
+
+		.title { font-size: 26px; color: #1e293b; font-weight: bold; margin-bottom: 30px; }
+
+		.info-grid {
+			width: 100%; display: grid; grid-template-columns: 1fr; gap: 15px;
+			background: #f8fafc; padding: 25px; border-radius: 12px;
+		}
+		.info-item { display: flex; font-size: 16px; align-items: center; }
+		.info-item .label { color: #64748b; width: 100px; flex-shrink: 0; }
+		.info-item .val { color: #0f172a; font-weight: 500; }
+
+		.action-area { margin-top: 30px; }
+		.btn-primary {
+			background: #ffffff; color: #008476; border: 1px solid #008476; padding: 0 35px;
+			height: 42px; border-radius: 8px; font-size: 15px; cursor: pointer; transition: all 0.3s;
+		}
+		.btn-primary:hover { background: #008476; color: white; }
+
+	</style>
+</head>
+<body>
+<div id="app" class="detail-container">
+
+	<div class="breadcrumb">
+		<a href="javascript:window.history.back();"><i class="layui-icon layui-icon-left"></i> 返回分类列表</a>
+		<span>/</span>
+		分类详情
+	</div>
+
+	<div class="simple-card">
+		<div class="icon-area">
+			<i class="layui-icon layui-icon-template-1"></i>
+		</div>
+		<div class="title">{{detail.yaopinfenlei}}</div>
+
+		<div class="info-grid">
+			<div class="info-item" v-if="detail.yaopinfenlei">
+				<div class="label">分类名称：</div>
+				<div class="val" style="color: #008476; font-size: 18px;">{{detail.yaopinfenlei}}</div>
+			</div>
+		</div>
+
+		<div class="action-area" v-if="isAuth('yaopinfenlei','修改')">
+			<button @click="jump('../yaopinfenlei/add.html?id='+detail.id)" class="btn-primary">编辑该分类</button>
+		</div>
+	</div>
+
+</div>
+
+<script src="../../layui/layui.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/config.js"></script>
+<script src="../../modules/config.js"></script>
+<script src="../../js/utils.js"></script>
+
+<script>
+	var vue = new Vue({
+		el: '#app',
+		data: {
+			detail: { id: 0 },
+			detailTable: 'yaopinfenlei',
+			baseurl: ''
+		},
+		methods: {
+			jump(url) { jump(url) },
+			isAuth(tablename, button) { return isFrontAuth(tablename, button) }
+		}
+	});
+
+	layui.use(['layer', 'http', 'jquery'], function() {
+		var layer = layui.layer;
+		var http = layui.http;
+		var jquery = layui.jquery;
+
+		var id = http.getParam('id');
+		vue.detail.id = id;
+		vue.baseurl = http.baseurl;
+
+		http.request(`${vue.detailTable}/detail/` + id, 'get', {}, function(res) {
+			vue.detail = res.data;
+		});
+	});
+</script>
+</body>
+</html>
