@@ -126,14 +126,14 @@
 			<div class="layui-form-item" pane>
 				<label class="layui-form-label">参考价格：</label>
 				<div class="layui-input-block">
-					<input v-model="detail.jiage" type="number" :readonly="ro.jiage" name="jiage" id="jiage" autocomplete="off" class="layui-input" placeholder="输入预估费用(元)">
+					<input v-model="detail.feiyong" type="number" :readonly="ro.feiyong" name="feiyong" id="feiyong" autocomplete="off" class="layui-input" placeholder="输入预估费用(元)">
 				</div>
 			</div>
 
 			<div class="layui-form-item" pane>
 				<label class="layui-form-label">诊疗详情介绍：</label>
 				<div class="layui-input-block">
-					<textarea name="xiangmujianjie" id="xiangmujianjie">在这里详细描述该诊疗的优势、适用人群和注意事项...</textarea>
+					<textarea name="xiangmujieshao" id="xiangmujieshao">在这里详细描述该诊疗的优势、适用人群和注意事项...</textarea>
 				</div>
 			</div>
 
@@ -161,16 +161,16 @@
 				xiangmufenlei: '',
 				tupian: '',
 				keshi: '',
-				jiage: '',
-				xiangmujianjie: '',
+				feiyong: '',
+				xiangmujieshao: '',
 			},
 			ro:{
 				xiangmumingcheng : false,
 				xiangmufenlei : false,
 				tupian : false,
 				keshi : false,
-				jiage : false,
-				xiangmujianjie : false,
+				feiyong : false,
+				xiangmujieshao : false,
 			},
 			xiangmufenleiOptions: [],
 			baseurl: ''
@@ -234,7 +234,7 @@
 				if(o=='xiangmumingcheng'){ vue.detail[o] = crossObj[o]; vue.ro.xiangmumingcheng = true; continue; }
 				if(o=='xiangmufenlei'){ vue.detail[o] = crossObj[o]; vue.ro.xiangmufenlei = true; continue; }
 				if(o=='keshi'){ vue.detail[o] = crossObj[o]; vue.ro.keshi = true; continue; }
-				if(o=='jiage'){ vue.detail[o] = crossObj[o]; vue.ro.jiage = true; continue; }
+				if(o=='feiyong'){ vue.detail[o] = crossObj[o]; vue.ro.feiyong = true; continue; }
 			}
 		}
 
@@ -258,7 +258,7 @@
 
 		// 初始化富文本编辑器 (诊疗简介)
 		var edit = tinymce.render({
-			elem: "#xiangmujianjie",
+			elem: "#xiangmujieshao",
 			height: 400,
 			images_upload_handler: function(blobInfo, succFun, failFun) {
 				var xhr, formData;
@@ -284,10 +284,10 @@
 		form.on('submit(*)', function(data) {
 			data = data.field;
 			// 抓取并同步富文本数据
-			data.xiangmujianjie = tinymce.get('#xiangmujianjie').getContent();
+			data.xiangmujieshao = tinymce.get('#xiangmujieshao').getContent();
 
 			// 如果有必要验证纯数字价格可以保留原有逻辑
-			if(data.jiage && !isNumber(data.jiage)){
+			if(data.feiyong && !isNumber(data.feiyong)){
 				layer.msg('价格必须为纯数字', {time: 2000,icon: 5});
 				return false;
 			}
