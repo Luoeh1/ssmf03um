@@ -6,7 +6,7 @@
       :model="ruleForm"
       label-width="80px"
 	  style="background: transparent;"
-    >  
+    >
      <el-row>
       <el-col :span="12">
         <el-form-item   v-if="flag=='yonghu'"  label="用户账号" prop="yonghuzhanghao">
@@ -30,7 +30,7 @@
           </el-select>
         </el-form-item>
       </el-col>
-      <el-col :span="24">  
+      <el-col :span="24">
         <el-form-item v-if="flag=='yonghu'" label="头像" prop="touxiang">
           <file-upload
           tip="点击上传头像"
@@ -84,7 +84,7 @@
           </el-select>
         </el-form-item>
       </el-col>
-      <el-col :span="24">  
+      <el-col :span="24">
         <el-form-item v-if="flag=='yisheng'" label="头像" prop="touxiang">
           <file-upload
           tip="点击上传头像"
@@ -114,7 +114,7 @@
         </el-form-item>
       </el-col>
       <el-form-item v-if="flag=='users'" label="用户名" prop="username">
-        <el-input v-model="ruleForm.username" 
+        <el-input v-model="ruleForm.username"
         placeholder="用户名"></el-input>
       </el-form-item>
       <el-col :span="24">
@@ -156,7 +156,16 @@ export default {
     });
     this.yonghuxingbieOptions = "男,女".split(',')
     this.yishengxingbieOptions = "男,女".split(',')
-    this.yishengkeshiOptions = "外科,内科,妇科".split(',')
+    this.$http({
+      url: `option/xiangmufenlei/xiangmufenlei`,
+      method: "get"
+    }).then(({ data }) => {
+      if (data && data.code === 0) {
+        this.yishengkeshiOptions = data.data;
+      } else {
+        this.$message.error(data.msg);
+      }
+    });
   },
   methods: {
     yonghutouxiangUploadChange(fileUrls) {
@@ -210,7 +219,7 @@ export default {
       }
       if('users'==this.flag && this.ruleForm.username.trim().length<1) {
 	this.$message.error(`用户名不能为空`);
-        return	
+        return
       }
       this.$http({
         url: `${this.$storage.get("sessionTable")}/update`,

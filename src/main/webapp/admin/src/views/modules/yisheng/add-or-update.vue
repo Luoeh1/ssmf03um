@@ -313,8 +313,17 @@ export default {
           this.$message.error(data.msg);
         }
       });
-            this.xingbieOptions = "男,女".split(',')
-            this.keshiOptions = "外科,内科,妇科".split(',')
+      this.xingbieOptions = "男,女".split(',')
+      this.$http({
+        url: `option/xiangmufenlei/xiangmufenlei`,
+        method: "get"
+      }).then(({ data }) => {
+        if (data && data.code === 0) {
+          this.keshiOptions = data.data;
+        } else {
+          this.$message.error(data.msg);
+        }
+      });
     },
     // 多级联动参数
     info(id) {
