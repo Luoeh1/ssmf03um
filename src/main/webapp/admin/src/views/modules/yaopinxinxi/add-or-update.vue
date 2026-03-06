@@ -81,72 +81,6 @@
             </el-form-item>
           </div>
         </el-col>
-        <el-col :span="12">
-          <el-form-item class="date" v-if="type!='info'" label="开药时间" prop="kaiyaoshijian">
-            <el-date-picker
-                format="yyyy 年 MM 月 dd 日"
-                value-format="yyyy-MM-dd"
-                v-model="ruleForm.kaiyaoshijian"
-                type="date"
-                :readonly="ro.kaiyaoshijian"
-                placeholder="开药时间">
-            </el-date-picker>
-          </el-form-item>
-          <div v-else>
-            <el-form-item class="input" v-if="ruleForm.kaiyaoshijian" label="开药时间" prop="kaiyaoshijian">
-              <el-input v-model="ruleForm.kaiyaoshijian"
-                        placeholder="开药时间" readonly></el-input>
-            </el-form-item>
-          </div>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item class="input" v-if="type!='info'"  label="医生工号" prop="yishenggonghao">
-            <el-input v-model="ruleForm.yishenggonghao"
-                      placeholder="医生工号" clearable  :readonly="ro.yishenggonghao"></el-input>
-          </el-form-item>
-          <div v-else>
-            <el-form-item class="input" label="医生工号" prop="yishenggonghao">
-              <el-input v-model="ruleForm.yishenggonghao"
-                        placeholder="医生工号" readonly></el-input>
-            </el-form-item>
-          </div>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item class="input" v-if="type!='info'"  label="医生姓名" prop="yishengxingming">
-            <el-input v-model="ruleForm.yishengxingming"
-                      placeholder="医生姓名" clearable  :readonly="ro.yishengxingming"></el-input>
-          </el-form-item>
-          <div v-else>
-            <el-form-item class="input" label="医生姓名" prop="yishengxingming">
-              <el-input v-model="ruleForm.yishengxingming"
-                        placeholder="医生姓名" readonly></el-input>
-            </el-form-item>
-          </div>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item class="input" v-if="type!='info'"  label="用户账号" prop="yonghuzhanghao">
-            <el-input v-model="ruleForm.yonghuzhanghao"
-                      placeholder="用户账号" clearable  :readonly="ro.yonghuzhanghao"></el-input>
-          </el-form-item>
-          <div v-else>
-            <el-form-item class="input" label="用户账号" prop="yonghuzhanghao">
-              <el-input v-model="ruleForm.yonghuzhanghao"
-                        placeholder="用户账号" readonly></el-input>
-            </el-form-item>
-          </div>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item class="input" v-if="type!='info'"  label="用户姓名" prop="yonghuxingming">
-            <el-input v-model="ruleForm.yonghuxingming"
-                      placeholder="用户姓名" clearable  :readonly="ro.yonghuxingming"></el-input>
-          </el-form-item>
-          <div v-else>
-            <el-form-item class="input" label="用户姓名" prop="yonghuxingming">
-              <el-input v-model="ruleForm.yonghuxingming"
-                        placeholder="用户姓名" readonly></el-input>
-            </el-form-item>
-          </div>
-        </el-col>
       </el-row>
 
       <el-row>
@@ -255,13 +189,8 @@ export default {
         yaopinfenlei : false,
         jixing : false,
         feiyong : false,
-        kaiyaoshijian : false,
-        yishenggonghao : false,
-        yishengxingming : false,
-        yonghuzhanghao : false,
-        yonghuxingming : false,
         ispay : false,
-        xiangxijieshao : false, // 新增：只读属性
+        xiangxijieshao : false,
       },
       ruleForm: {
         yaopinbianhao: this.getUUID(),
@@ -269,12 +198,7 @@ export default {
         yaopinfenlei: '',
         jixing: '',
         feiyong: '',
-        kaiyaoshijian: '',
-        yishenggonghao: '',
-        yishengxingming: '',
-        yonghuzhanghao: '',
-        yonghuxingming: '',
-        xiangxijieshao: '', // 新增：数据字段初始化
+        xiangxijieshao: '',
       },
       yaopinfenleiOptions: [],
       jixingOptions: [],
@@ -292,19 +216,9 @@ export default {
         feiyong: [
           { validator: validateIntNumber, trigger: 'blur' },
         ],
-        kaiyaoshijian: [
-        ],
-        yishenggonghao: [
-        ],
-        yishengxingming: [
-        ],
-        yonghuzhanghao: [
-        ],
-        yonghuxingming: [
-        ],
         ispay: [
         ],
-        xiangxijieshao: [ // 新增：验证规则
+        xiangxijieshao: [
         ],
       }
     };
@@ -313,7 +227,6 @@ export default {
   computed: {
   },
   created() {
-    this.ruleForm.kaiyaoshijian = this.getCurDate()
     this.addEditStyleChange()
     this.addEditUploadStyleChange()
   },
@@ -361,57 +274,14 @@ export default {
             this.ro.feiyong = true;
             continue;
           }
-          if(o=='kaiyaoshijian'){
-            this.ruleForm.kaiyaoshijian = obj[o];
-            this.ro.kaiyaoshijian = true;
-            continue;
-          }
-          if(o=='yishenggonghao'){
-            this.ruleForm.yishenggonghao = obj[o];
-            this.ro.yishenggonghao = true;
-            continue;
-          }
-          if(o=='yishengxingming'){
-            this.ruleForm.yishengxingming = obj[o];
-            this.ro.yishengxingming = true;
-            continue;
-          }
-          if(o=='yonghuzhanghao'){
-            this.ruleForm.yonghuzhanghao = obj[o];
-            this.ro.yonghuzhanghao = true;
-            continue;
-          }
-          if(o=='yonghuxingming'){
-            this.ruleForm.yonghuxingming = obj[o];
-            this.ro.yonghuxingming = true;
-            continue;
-          }
-          if(o=='xiangxijieshao'){ // 跨表增加详细介绍
+          if(o=='xiangxijieshao'){
             this.ruleForm.xiangxijieshao = obj[o];
             this.ro.xiangxijieshao = true;
             continue;
           }
         }
       }
-      // 获取用户信息
-      this.$http({
-        url: `${this.$storage.get('sessionTable')}/session`,
-        method: "get"
-      }).then(({ data }) => {
-        if (data && data.code === 0) {
-          var json = data.data;
-          if(json.yishenggonghao!=''&&json.yishenggonghao){
-            this.ruleForm.yishenggonghao = json.yishenggonghao
-            this.ro.yishenggonghao = true;
-          }
-          if(json.yishengxingming!=''&&json.yishengxingming){
-            this.ruleForm.yishengxingming = json.yishengxingming
-            this.ro.yishengxingming = true;
-          }
-        } else {
-          this.$message.error(data.msg);
-        }
-      });
+
       this.$http({
         url: `option/yaopinfenlei/yaopinfenlei`,
         method: "get"
@@ -699,6 +569,7 @@ export default {
   }
 };
 </script>
+
 <style lang="scss">
 .editor{
   height: 500px;
