@@ -88,5 +88,6 @@ public class YaopinfenleiEntity<T> implements Serializable {
 	public String getYaopinfenlei() {
 		return yaopinfenlei;
 	}
+	
 
 }

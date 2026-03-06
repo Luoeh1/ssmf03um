@@ -117,6 +117,7 @@
 			<li :class="currentMenu === 'info' ? 'active' : ''" @click="navTo('info', '')">个人基本信息</li>
 
 			<li v-for="(item, index) in centerMenu" :key="index"
+				v-if="item.name !== '个人中心'"
 				:class="currentMenu === item.name ? 'active' : ''"
 				@click="navTo(item.name, item.url)">
 				{{item.name}}

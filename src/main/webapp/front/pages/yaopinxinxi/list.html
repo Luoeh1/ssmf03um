@@ -50,41 +50,38 @@
 		}
 		.add-btn:hover { background: rgba(0, 132, 118, 0.05); transform: translateY(-2px); }
 
-		/* 网格卡片 */
+		/* 网格卡片（优化纯文本布局） */
 		.data-grid {
-			display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; margin-bottom: 40px;
+			display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; margin-bottom: 40px;
 		}
 
 		.item-card {
-			background: #ffffff; border-radius: 16px; overflow: hidden;
-			box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03); transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+			background: #ffffff; border-radius: 12px; overflow: hidden;
+			box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03); transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 			text-decoration: none; display: flex; flex-direction: column; cursor: pointer;
+			padding: 25px; border-left: 5px solid #008476; /* 添加强调边框 */
+			height: 180px; box-sizing: border-box;
 		}
 		.item-card:hover {
-			transform: translateY(-8px); box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+			transform: translateY(-6px); box-shadow: 0 12px 25px rgba(0, 132, 118, 0.12); border-left-width: 8px;
 		}
 
-		.card-img-wrap {
-			width: 100%; height: 220px; overflow: hidden; background-color: #f1f5f9; display: flex; align-items: center; justify-content: center;
-		}
-		.card-img-wrap img {
-			width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;
-		}
-		.item-card:hover .card-img-wrap img { transform: scale(1.05); }
+		.card-content { flex-grow: 1; display: flex; flex-direction: column; }
 
-		.card-content { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
 		.card-title {
-			font-size: 18px; color: #1e293b; font-weight: 600; margin-bottom: 12px; transition: color 0.3s;
-			white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+			font-size: 19px; color: #1e293b; font-weight: bold; margin-bottom: 16px; transition: color 0.3s;
+			white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: 0.5px;
 		}
 		.item-card:hover .card-title { color: #008476; }
 
-		.card-info { font-size: 14px; color: #64748b; margin-bottom: 8px; display: flex; align-items: center; }
-		.card-info i { margin-right: 6px; color: #94a3b8; font-size: 16px; }
+		.card-info { font-size: 14px; color: #64748b; margin-bottom: 10px; display: flex; align-items: center; }
+		.card-info i { margin-right: 8px; color: #008476; font-size: 16px; opacity: 0.8; }
 
 		.card-price {
-			margin-top: auto; padding-top: 15px; border-top: 1px dashed #f1f5f9; font-size: 20px; color: #ef4444; font-weight: bold;
+			margin-top: auto; padding-top: 15px; border-top: 1px dashed #e2e8f0;
+			font-size: 22px; color: #ef4444; font-weight: bold; text-align: right;
 		}
+		.card-price span { font-size: 14px; font-weight: normal; margin-right: 2px; }
 
 		/* Layui 分页器 */
 		.layui-laypage { display: block; text-align: center; }
@@ -94,7 +91,7 @@
 </head>
 <body>
 <div id="app" class="list-container">
-	<div class="page-title">线上药房 / 药品信息</div>
+	<div class="page-title">药品信息</div>
 
 	<div class="search-bar">
 		<div>
@@ -109,21 +106,23 @@
 
 	<div class="data-grid">
 		<a v-for="(item,index) in dataList" :key="index" @click="jump('../yaopinxinxi/detail.html?id='+item.id)" class="item-card">
-			<div class="card-img-wrap">
-				<img :src="item.tupian ? baseurl + item.tupian.split(',')[0] : '../../layui/images/face/0.gif'">
-			</div>
 			<div class="card-content">
 				<div class="card-title" :title="item.yaopinmingcheng">{{item.yaopinmingcheng}}</div>
-				<div class="card-info" v-if="item.yaopinfenlei">
-					<i class="layui-icon layui-icon-app"></i>分类: {{item.yaopinfenlei}}
+
+				<div style="display: flex; gap: 20px;">
+					<div class="card-info" v-if="item.yaopinfenlei">
+						<i class="layui-icon layui-icon-app"></i>分类: {{item.yaopinfenlei}}
+					</div>
+					<div class="card-info" v-if="item.guige">
+						<i class="layui-icon layui-icon-tabs"></i>规格: {{item.guige}}
+					</div>
 				</div>
-				<div class="card-info" v-if="item.guige">
-					<i class="layui-icon layui-icon-tabs"></i>规格: {{item.guige}}
-				</div>
+
 				<div class="card-info" v-if="item.shengchanshang">
 					<i class="layui-icon layui-icon-home"></i>厂商: {{item.shengchanshang}}
 				</div>
-				<div class="card-price" v-if="item.feiyong">￥{{item.feiyong}}</div>
+
+				<div class="card-price" v-if="item.feiyong"><span>￥</span>{{item.feiyong}}</div>
 			</div>
 		</a>
 	</div>
@@ -164,7 +163,7 @@
 
 		vue.baseurl = http.baseurl;
 
-		// 获取分类字典 (如有需要解开上方HTML注释即可联动)
+		// 获取分类字典
 		http.request(`option/yaopinfenlei/yaopinfenlei`,'get',{},(res)=>{
 			vue.yaopinfenleiOptions = res.data;
 		});
@@ -178,11 +177,7 @@
 			}
 
 			http.request('yaopinxinxi/list', 'get', param, function(res) {
-				for(let i=0; i<res.data.list.length; i++) {
-					if(res.data.list[i].tupian) {
-						res.data.list[i].tupian = res.data.list[i].tupian.replace(http.baseurl, "");
-					}
-				}
+				// 移除了不必要的图片裁剪循环，使代码更轻量
 				vue.dataList = res.data.list;
 
 				laypage.render({

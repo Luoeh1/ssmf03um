@@ -68,6 +68,19 @@ public class YaopinxinxiEntity<T> implements Serializable {
 	 */
 					
 	private String yaopinfenlei;
+
+	/**
+	 * 详细介绍
+	 */
+	private String xiangxijieshao;
+
+	public String getXiangxijieshao() {
+		return xiangxijieshao;
+	}
+
+	public void setXiangxijieshao(String xiangxijieshao) {
+		this.xiangxijieshao = xiangxijieshao;
+	}
 	
 	/**
 	 * 剂型
