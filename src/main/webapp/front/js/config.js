@@ -32,16 +32,38 @@ var centerMenu = [{
     name: '个人中心',
     url: '../' + localStorage.getItem('userTable') + '/center.html'
 },
+    {
+        name: '我的预约',
+        url: '../yuyuexinxi/list.html'
+    },
+    {
+        name: '我的检查',
+        url: '../jianchaxinxi/list.html'
+    },
+    {
+        name: '检查报告',
+        url: '../jianchabaogao/list.html'
+    },
+    {
+        name: '电子病历',
+        url: '../dianzibingli/list.html'
+    }
 ]
 
 
 var indexNav = [
-
+    {
+        name: '医生团队',
+        url: './pages/yisheng/list.html'
+    },
     {
         name: '诊疗预约',
         url: './pages/xiangmuxinxi/list.html'
     },
-
+    {
+        name: '药品信息',
+        url: './pages/yaopinxinxi/list.html'
+    },
     {
         name: '医院公告',
         url: './pages/news/list.html'
