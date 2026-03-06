@@ -9,7 +9,7 @@ const base = {
     },
     getProjectName(){
         return {
-            projectName: "医院门诊互联电子病历管理信息系统"
+            projectName: "社区诊疗与健康档案管理系统"
         } 
     }
 }

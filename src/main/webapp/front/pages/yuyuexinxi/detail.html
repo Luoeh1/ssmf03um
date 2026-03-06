@@ -41,8 +41,9 @@
 
 		/* 预约核心信息 */
 		.main-info { margin-bottom: 30px; }
-		.item-title { font-size: 26px; color: #1e293b; font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+		.item-title { font-size: 26px; color: #1e293b; font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;}
 		.dept-tag { font-size: 14px; background: rgba(0, 132, 118, 0.1); color: #008476; padding: 4px 12px; border-radius: 6px; font-weight: 500; }
+		.type-tag { font-size: 14px; background: rgba(59, 130, 246, 0.1); color: #3b82f6; padding: 4px 12px; border-radius: 6px; font-weight: 500; }
 
 		/* 详情网格 */
 		.info-grid {
@@ -51,6 +52,7 @@
 		.info-item { display: flex; font-size: 15px; }
 		.info-item .label { color: #64748b; width: 90px; flex-shrink: 0; }
 		.info-item .val { color: #334155; font-weight: 500; }
+		.price-val { color: #ef4444 !important; font-weight: bold !important; font-size: 16px; }
 
 		/* 内容/长文本区块 */
 		.content-block { margin-bottom: 30px; }
@@ -84,6 +86,7 @@
 	</style>
 </head>
 <body>
+
 <div id="app" class="detail-container">
 
 	<div class="breadcrumb">
@@ -103,7 +106,8 @@
 		<div class="main-info">
 			<div class="item-title">
 				{{detail.xiangmumingcheng}}
-				<span class="dept-tag" v-if="detail.keshi">{{detail.keshi}}</span>
+				<span class="dept-tag" v-if="detail.xiangmuweizhi"><i class="layui-icon layui-icon-location"></i> {{detail.xiangmuweizhi}}</span>
+				<span class="type-tag" v-if="detail.xiangmufenlei">{{detail.xiangmufenlei}}</span>
 			</div>
 		</div>
 
@@ -112,17 +116,21 @@
 				<span class="label">预约时间：</span>
 				<span class="val">{{detail.yuyueshijian}}</span>
 			</div>
-			<div class="info-item" v-if="detail.xingming">
-				<span class="label">就诊人姓名：</span>
-				<span class="val">{{detail.xingming}}</span>
+			<div class="info-item" v-if="detail.yishengxingming">
+				<span class="label">接诊医生：</span>
+				<span class="val">{{detail.yishengxingming}} <span style="color:#94a3b8;font-size:13px;" v-if="detail.yishenggonghao">({{detail.yishenggonghao}})</span></span>
+			</div>
+			<div class="info-item" v-if="detail.feiyong">
+				<span class="label">诊疗费用：</span>
+				<span class="val price-val">￥{{detail.feiyong}}</span>
+			</div>
+			<div class="info-item" v-if="detail.yonghuxingming">
+				<span class="label">就诊人：</span>
+				<span class="val">{{detail.yonghuxingming}} <span style="color:#94a3b8;font-size:13px;" v-if="detail.yonghuzhanghao">({{detail.yonghuzhanghao}})</span></span>
 			</div>
 			<div class="info-item" v-if="detail.shouji">
 				<span class="label">联系电话：</span>
 				<span class="val">{{detail.shouji}}</span>
-			</div>
-			<div class="info-item" v-if="detail.shenfenzheng">
-				<span class="label">身份证号：</span>
-				<span class="val">{{detail.shenfenzheng}}</span>
 			</div>
 		</div>
 
@@ -175,202 +183,7 @@
 		var layer = layui.layer;
 		var http = layui.http;
 		var jquery = layui.jquery;
-		<!DOCTYPE html>
-		<html>
-		<head>
-		<meta charset="utf-8">
-				<title>预约记录详情</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-			<link rel="stylesheet" href="../../layui/css/layui.css">
-				<style>
-					body, html {
-					margin: 0; padding: 0; background-color: #f5f8fa;
-					font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-					min-height: 100vh;
-				}
 
-					.detail-container { max-width: 850px; margin: 40px auto 60px; padding: 0 20px; box-sizing: border-box; }
-
-					.breadcrumb { margin-bottom: 25px; font-size: 15px; color: #64748b; display: flex; align-items: center; }
-					.breadcrumb a { color: #475569; text-decoration: none; transition: color 0.3s; }
-					.breadcrumb a:hover { color: #008476; }
-					.breadcrumb span { margin: 0 10px; color: #cbd5e1; }
-
-					/* 工单式详情卡片 */
-					.ticket-card {
-					background: #ffffff; border-radius: 20px; padding: 40px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
-					position: relative; border-top: 6px solid #008476;
-				}
-
-					/* 顶部状态与单号 */
-					.ticket-header {
-					display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #e2e8f0;
-					padding-bottom: 20px; margin-bottom: 30px;
-				}
-					.ticket-no { font-size: 16px; color: #64748b; font-family: monospace; }
-
-					.status-badge {
-					padding: 6px 18px; border-radius: 30px; font-size: 14px; font-weight: 600; letter-spacing: 1px;
-				}
-					.badge-pending { background: #fef3c7; color: #d97706; } /* 待审核橙色 */
-					.badge-pass { background: #dcfce7; color: #15803d; }   /* 通过绿色 */
-					.badge-reject { background: #fee2e2; color: #b91c1c; } /* 拒绝红色 */
-
-					/* 预约核心信息 */
-					.main-info { margin-bottom: 30px; }
-					.item-title { font-size: 26px; color: #1e293b; font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;}
-					.dept-tag { font-size: 14px; background: rgba(0, 132, 118, 0.1); color: #008476; padding: 4px 12px; border-radius: 6px; font-weight: 500; }
-					.type-tag { font-size: 14px; background: rgba(59, 130, 246, 0.1); color: #3b82f6; padding: 4px 12px; border-radius: 6px; font-weight: 500; }
-
-					/* 详情网格 */
-					.info-grid {
-					display: grid; grid-template-columns: 1fr 1fr; gap: 20px; background: #f8fafc; padding: 25px; border-radius: 12px; margin-bottom: 30px;
-				}
-					.info-item { display: flex; font-size: 15px; }
-					.info-item .label { color: #64748b; width: 90px; flex-shrink: 0; }
-					.info-item .val { color: #334155; font-weight: 500; }
-					.price-val { color: #ef4444 !important; font-weight: bold !important; font-size: 16px; }
-
-					/* 内容/长文本区块 */
-					.content-block { margin-bottom: 30px; }
-					.block-title { font-size: 16px; color: #1e293b; font-weight: 600; margin-bottom: 10px; }
-					.block-text {
-					background: #ffffff; border: 1px solid #e2e8f0; padding: 15px 20px; border-radius: 8px;
-					font-size: 15px; color: #475569; line-height: 1.6; min-height: 80px; white-space: pre-wrap;
-				}
-
-					/* 审核回复特殊样式 */
-					.reply-block {
-					background: #fff8f1; border: 1px solid #fed7aa; padding: 20px; border-radius: 12px; margin-top: 10px;
-				}
-					.reply-title { color: #d97706; font-size: 16px; font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; }
-					.reply-title i { margin-right: 8px; font-size: 20px; }
-					.reply-text { font-size: 15px; color: #b45309; line-height: 1.6; }
-
-					/* 底部操作区 */
-					.action-area { margin-top: 40px; display: flex; gap: 15px; justify-content: center; }
-					.btn-primary {
-					background: linear-gradient(135deg, #00b4db 0%, #008476 100%); color: white; border: none; padding: 0 35px;
-					height: 48px; border-radius: 8px; font-size: 15px; font-weight: 500; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 132, 118, 0.3); transition: all 0.3s; display: flex; align-items: center;
-				}
-					.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 132, 118, 0.4); color: white;}
-
-					@media (max-width: 768px) {
-					.ticket-card { padding: 25px; }
-					.info-grid { grid-template-columns: 1fr; }
-					.ticket-header { flex-direction: column; align-items: flex-start; gap: 15px; }
-				}
-				</style>
-			</head>
-			<body>
-			<div id="app" class="detail-container">
-
-				<div class="breadcrumb">
-					<a href="javascript:window.history.back();"><i class="layui-icon layui-icon-left"></i> 返回预约列表</a>
-					<span>/</span>
-					预约详情
-				</div>
-
-				<div class="ticket-card">
-					<div class="ticket-header">
-						<div class="ticket-no">预约单号：{{detail.yuyuebianhao}}</div>
-						<div class="status-badge badge-pass" v-if="detail.sfsh=='是'">审核已通过</div>
-						<div class="status-badge badge-reject" v-else-if="detail.sfsh=='否'">审核被拒绝</div>
-						<div class="status-badge badge-pending" v-else>正在审核中</div>
-					</div>
-
-					<div class="main-info">
-						<div class="item-title">
-							{{detail.xiangmumingcheng}}
-							<span class="dept-tag" v-if="detail.xiangmuweizhi"><i class="layui-icon layui-icon-location"></i> {{detail.xiangmuweizhi}}</span>
-							<span class="type-tag" v-if="detail.xiangmufenlei">{{detail.xiangmufenlei}}</span>
-						</div>
-					</div>
-
-					<div class="info-grid">
-						<div class="info-item" v-if="detail.yuyueshijian">
-							<span class="label">预约时间：</span>
-							<span class="val">{{detail.yuyueshijian}}</span>
-						</div>
-						<div class="info-item" v-if="detail.yishengxingming">
-							<span class="label">接诊医生：</span>
-							<span class="val">{{detail.yishengxingming}} <span style="color:#94a3b8;font-size:13px;" v-if="detail.yishenggonghao">({{detail.yishenggonghao}})</span></span>
-						</div>
-						<div class="info-item" v-if="detail.feiyong">
-							<span class="label">诊疗费用：</span>
-							<span class="val price-val">￥{{detail.feiyong}}</span>
-						</div>
-						<div class="info-item" v-if="detail.yonghuxingming">
-							<span class="label">就诊人：</span>
-							<span class="val">{{detail.yonghuxingming}} <span style="color:#94a3b8;font-size:13px;" v-if="detail.yonghuzhanghao">({{detail.yonghuzhanghao}})</span></span>
-						</div>
-						<div class="info-item" v-if="detail.shouji">
-							<span class="label">联系电话：</span>
-							<span class="val">{{detail.shouji}}</span>
-						</div>
-					</div>
-
-					<div class="content-block" v-if="detail.yuyueneirong">
-						<div class="block-title">患者需求 / 病症描述：</div>
-						<div class="block-text">{{detail.yuyueneirong}}</div>
-					</div>
-
-					<div class="reply-block" v-if="detail.sfsh && detail.sfsh != '待审核'">
-						<div class="reply-title"><i class="layui-icon layui-icon-notice"></i> 医护/系统回复意见</div>
-						<div class="reply-text">{{detail.shhf || '暂无回复说明'}}</div>
-					</div>
-
-					<div class="action-area">
-					</div>
-
-				</div>
-
-			</div>
-
-			<script src="../../layui/layui.js"></script>
-<script src="../../js/vue.js"></script>
-<script src="../../js/config.js"></script>
-<script src="../../modules/config.js"></script>
-<script src="../../js/utils.js"></script>
-
-<script>
-	var vue = new Vue({
-		el: '#app',
-		data: {
-			detail: { id: 0 },
-			detailTable: 'yuyuexinxi',
-			baseurl: ''
-		},
-		methods: {
-			jump(url) { jump(url) },
-			isAuth(tablename, button) { return isFrontAuth(tablename, button) },
-			onAcrossTap(tableName, crossOptAudit, statusColumnName, tips, statusColumnValue) {
-				localStorage.setItem('crossTable', `yuyuexinxi`);
-				localStorage.setItem('crossObj', JSON.stringify(this.detail));
-				localStorage.setItem('statusColumnName', statusColumnName);
-				localStorage.setItem('statusColumnValue', statusColumnValue);
-				localStorage.setItem('tips', tips);
-				jump(`../${tableName}/add.html?corss=true`);
-			},
-		}
-	});
-
-	layui.use(['layer', 'http', 'jquery'], function() {
-		var layer = layui.layer;
-		var http = layui.http;
-		var jquery = layui.jquery;
-
-		var id = http.getParam('id');
-		vue.detail.id = id;
-		vue.baseurl = http.baseurl;
-
-		http.request(`${vue.detailTable}/detail/` + id, 'get', {}, function(res) {
-			vue.detail = res.data;
-		});
-	});
-</script>
-</body>
-</html>
 		var id = http.getParam('id');
 		vue.detail.id = id;
 		vue.baseurl = http.baseurl;

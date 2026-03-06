@@ -1,5 +1,5 @@
 
-var projectName = '医院门诊互联电子病历管理信息系统';
+var projectName = '社区诊疗与健康档案管理系统';
 /**
  * 轮播图配置
  */

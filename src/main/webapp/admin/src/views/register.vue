@@ -2,7 +2,7 @@
   <div>
         <div class="container">
       <div class="login-form">
-        <h1 class="h1">医院门诊互联电子病历管理信息系统注册</h1>
+        <h1 class="h1">社区诊疗与健康档案管理系统注册</h1>
 		<el-form ref="rgsForm" class="rgs-form" :model="rgsForm">
 			<!-- <div v-if="tableName=='yonghu'" class="input-group">
 			   <div class="label">用户账号</div>
