@@ -9,7 +9,7 @@
 		body, html {
 			margin: 0;
 			padding: 0;
-			background-color: #f5f8fa; /* 护眼浅灰蓝背景 */
+			background-color: #f5f8fa;
 			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 			min-height: 100vh;
 		}
@@ -33,10 +33,9 @@
 			box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
 			overflow: hidden;
 			position: sticky;
-			top: 100px;
+			top: 10px; /* 滚动时固定在左侧 */
 		}
 
-		/* 左侧顶部：用户资料卡 */
 		.user-profile-header {
 			background: linear-gradient(135deg, #00b4db 0%, #008476 100%);
 			padding: 40px 20px 30px;
@@ -68,7 +67,7 @@
 			color: rgba(255, 255, 255, 0.8);
 		}
 
-		/* 菜单项重写 Layui 样式 */
+		/* 菜单项样式 */
 		.layui-nav-tree {
 			width: 100% !important;
 			background: transparent !important;
@@ -99,17 +98,20 @@
 			box-shadow: 0 4px 12px rgba(0, 132, 118, 0.2);
 			transform: translateX(0);
 		}
-		.layui-nav-tree .layui-nav-bar { display: none; } /* 隐藏默认右侧绿条 */
-
+		.layui-nav-tree .layui-nav-bar { display: none; }
 
 		/* ================= 右侧内容区 ================= */
 		.right-content {
 			flex: 1;
 			background: #ffffff;
 			border-radius: 20px;
-			padding: 40px 50px;
 			box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
 			min-height: 600px;
+			overflow: hidden;
+		}
+		/* 仅在显示表单时应用的内边距 */
+		.form-padding {
+			padding: 40px 50px;
 		}
 
 		.section-title {
@@ -132,10 +134,7 @@
 			margin-right: 12px;
 		}
 
-		/* 表单高级样式 */
-		.layui-form-item {
-			margin-bottom: 25px;
-		}
+		.layui-form-item { margin-bottom: 25px; }
 		.layui-form-label {
 			width: 100px;
 			padding: 12px 15px 12px 0;
@@ -146,7 +145,7 @@
 		}
 		.layui-input-block {
 			margin-left: 115px;
-			max-width: 600px; /* 限制输入框最大宽度，防止拉伸过长 */
+			max-width: 600px;
 		}
 		.layui-input {
 			height: 46px;
@@ -162,78 +161,28 @@
 			border-color: #008476;
 			box-shadow: 0 0 0 3px rgba(0, 132, 118, 0.1);
 		}
-		.layui-input[readonly] {
-			background-color: #e2e8f0;
-			color: #94a3b8;
-			cursor: not-allowed;
-		}
+		.layui-input[readonly] { background-color: #e2e8f0; color: #94a3b8; cursor: not-allowed; }
 
-		/* 单选框美化 */
 		.layui-form-radio { margin: 6px 15px 0 0; }
 		.layui-form-radio>i { color: #cbd5e1; font-size: 20px; }
 		.layui-form-radioed>i { color: #008476 !important; }
 		.layui-form-radio>div { color: #475569; }
 		.layui-form-radioed>div { color: #008476 !important; font-weight: bold; }
 
-		/* 头像上传区 */
-		.upload-img-wrap {
-			display: flex;
-			align-items: center;
-			gap: 20px;
-		}
-		.upload-img-wrap img {
-			width: 80px;
-			height: 80px;
-			border-radius: 12px;
-			object-fit: cover;
-			border: 1px dashed #e2e8f0;
-			padding: 2px;
-		}
-		.btn-upload {
-			background: #ffffff;
-			color: #008476;
-			border: 1px solid #008476;
-			height: 38px;
-			line-height: 38px;
-			padding: 0 20px;
-			border-radius: 8px;
-			cursor: pointer;
-			transition: all 0.3s;
-			display: inline-block;
-		}
-		.btn-upload:hover {
-			background: rgba(0, 132, 118, 0.05);
-			transform: translateY(-2px);
-		}
+		.upload-img-wrap { display: flex; align-items: center; gap: 20px; }
+		.upload-img-wrap img { width: 80px; height: 80px; border-radius: 12px; object-fit: cover; border: 1px dashed #e2e8f0; padding: 2px; }
+		.btn-upload { background: #ffffff; color: #008476; border: 1px solid #008476; height: 38px; line-height: 38px; padding: 0 20px; border-radius: 8px; cursor: pointer; transition: all 0.3s; }
+		.btn-upload:hover { background: rgba(0, 132, 118, 0.05); transform: translateY(-2px); }
 
-		/* 提交按钮 */
-		.form-actions {
-			margin-top: 40px;
-			margin-left: 115px;
-		}
-		.btn-submit {
-			background: linear-gradient(135deg, #00b4db 0%, #008476 100%);
-			color: white;
-			border: none;
-			padding: 0 40px;
-			height: 48px;
-			border-radius: 8px;
-			font-size: 16px;
-			font-weight: 500;
-			cursor: pointer;
-			box-shadow: 0 6px 15px rgba(0, 132, 118, 0.3);
-			transition: all 0.3s;
-		}
-		.btn-submit:hover {
-			transform: translateY(-2px);
-			box-shadow: 0 8px 20px rgba(0, 132, 118, 0.4);
-		}
+		.form-actions { margin-top: 40px; margin-left: 115px; }
+		.btn-submit { background: linear-gradient(135deg, #00b4db 0%, #008476 100%); color: white; border: none; padding: 0 40px; height: 48px; border-radius: 8px; font-size: 16px; font-weight: 500; cursor: pointer; box-shadow: 0 6px 15px rgba(0, 132, 118, 0.3); transition: all 0.3s; }
+		.btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 132, 118, 0.4); }
 
-		/* 响应式调整 */
 		@media (max-width: 900px) {
 			.center-container { flex-direction: column; }
 			.left-menu { width: 100%; flex: auto; position: relative; top: 0; }
-			.right-content { padding: 30px 20px; width: 100%; box-sizing: border-box; }
+			.right-content { width: 100%; box-sizing: border-box; }
+			.form-padding { padding: 30px 20px; }
 			.layui-input-block { margin-left: 0; max-width: 100%; }
 			.layui-form-label { display: block; text-align: left; width: auto; padding-bottom: 5px; }
 			.form-actions { margin-left: 0; }
@@ -255,70 +204,77 @@
 			</div>
 
 			<ul class="layui-nav layui-nav-tree">
-				<li v-for="(item,index) in centerMenu" v-bind:key="index" class="layui-nav-item" :class="index==0?'layui-this':''">
-					<a :href="'javascript:jump(\''+item.url+'\')'">{{item.name}}</a>
+				<li class="layui-nav-item" :class="currentMenu=='info'?'layui-this':''">
+					<a href="javascript:void(0);" @click="navTo('info', '')">个人基本信息</a>
+				</li>
+				<li v-for="(item,index) in centerMenu" v-bind:key="index" class="layui-nav-item" :class="currentMenu==item.name?'layui-this':''">
+					<a href="javascript:void(0);" @click="navTo(item.name, item.url)">{{item.name}}</a>
 				</li>
 			</ul>
 		</div>
 
 		<div class="right-content">
-			<div class="section-title">个人基本信息</div>
+			<div class="form-padding" v-show="currentMenu === 'info'">
+				<div class="section-title">个人基本信息</div>
 
-			<form class="layui-form" lay-filter="myForm">
-				<div class="layui-form-item">
-					<label class="layui-form-label">用户账号</label>
-					<div class="layui-input-block">
-						<input type="text" name="yonghuzhanghao" id="yonghuzhanghao" placeholder="用户账号" autocomplete="off" class="layui-input" readonly>
-					</div>
-				</div>
-				<div class="layui-form-item">
-					<label class="layui-form-label">用户姓名</label>
-					<div class="layui-input-block">
-						<input type="text" name="yonghuxingming" id="yonghuxingming" placeholder="用户姓名" autocomplete="off" class="layui-input">
-					</div>
-				</div>
-				<div class="layui-form-item">
-					<label class="layui-form-label">密码</label>
-					<div class="layui-input-block">
-						<input type="password" name="mima" id="mima" placeholder="密码" autocomplete="off" class="layui-input">
-					</div>
-				</div>
-				<div class="layui-form-item">
-					<label class="layui-form-label">性别</label>
-					<div class="layui-input-block">
-						<input type="radio" name="xingbie" value="男" title="男" checked>
-						<input type="radio" name="xingbie" value="女" title="女">
-					</div>
-				</div>
-				<div class="layui-form-item">
-					<label class="layui-form-label">电话号码</label>
-					<div class="layui-input-block">
-						<input type="text" name="dianhuahaoma" id="dianhuahaoma" placeholder="电话号码" autocomplete="off" class="layui-input">
-					</div>
-				</div>
-				<div class="layui-form-item">
-					<label class="layui-form-label">紧急联系人</label>
-					<div class="layui-input-block">
-						<input type="text" name="jinjilianxiren" id="jinjilianxiren" placeholder="紧急联系人" autocomplete="off" class="layui-input">
-					</div>
-				</div>
-				<div class="layui-form-item">
-					<label class="layui-form-label">头像</label>
-					<div class="layui-input-block">
-						<div class="upload-img-wrap">
-							<img id="touxiangImg" src="../../layui/images/face/0.gif" alt="头像预览">
-							<input type="hidden" id="touxiang" name="touxiang" />
-							<button type="button" class="btn-upload" id="touxiangUpload">
-								<i class="layui-icon">&#xe67c;</i> 更换头像
-							</button>
+				<form class="layui-form" lay-filter="myForm">
+					<div class="layui-form-item">
+						<label class="layui-form-label">用户账号</label>
+						<div class="layui-input-block">
+							<input type="text" name="yonghuzhanghao" id="yonghuzhanghao" placeholder="用户账号" autocomplete="off" class="layui-input" readonly>
 						</div>
 					</div>
-				</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">用户姓名</label>
+						<div class="layui-input-block">
+							<input type="text" name="yonghuxingming" id="yonghuxingming" placeholder="用户姓名" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">密码</label>
+						<div class="layui-input-block">
+							<input type="password" name="mima" id="mima" placeholder="密码" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">性别</label>
+						<div class="layui-input-block">
+							<input type="radio" name="xingbie" value="男" title="男" checked>
+							<input type="radio" name="xingbie" value="女" title="女">
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">电话号码</label>
+						<div class="layui-input-block">
+							<input type="text" name="dianhuahaoma" id="dianhuahaoma" placeholder="电话号码" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">紧急联系人</label>
+						<div class="layui-input-block">
+							<input type="text" name="jinjilianxiren" id="jinjilianxiren" placeholder="紧急联系人" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">头像</label>
+						<div class="layui-input-block">
+							<div class="upload-img-wrap">
+								<img id="touxiangImg" src="../../layui/images/face/0.gif" alt="头像预览">
+								<input type="hidden" id="touxiang" name="touxiang" />
+								<button type="button" class="btn-upload" id="touxiangUpload">
+									<i class="layui-icon">&#xe67c;</i> 更换头像
+								</button>
+							</div>
+						</div>
+					</div>
 
-				<div class="form-actions">
-					<button class="btn-submit" lay-submit lay-filter="*">更新信息</button>
-				</div>
-			</form>
+					<div class="form-actions">
+						<button class="btn-submit" lay-submit lay-filter="*">更新信息</button>
+					</div>
+				</form>
+			</div>
+
+			<iframe v-if="currentMenu !== 'info'" :src="currentMenuUrl" id="center-iframe" frameborder="0" scrolling="no" style="width: 100%; min-height: 650px; display: block;"></iframe>
 		</div>
 
 	</div>
@@ -337,11 +293,17 @@
 		data: {
 			centerMenu: centerMenu,
 			sessionForm: {},
-			baseurl: ''
+			baseurl: '',
+			currentMenu: 'info', // 标记当前激活的菜单：默认 info 为个人信息
+			currentMenuUrl: ''   // 局部 iframe 的链接
 		},
 		methods: {
-			jump(url) {
-				jump(url)
+			// 左侧菜单点击切换机制
+			navTo(menuName, url) {
+				this.currentMenu = menuName;
+				if (menuName !== 'info') {
+					this.currentMenuUrl = url;
+				}
 			}
 		}
 	})
@@ -352,29 +314,20 @@
 		var form = layui.form;
 		var http = layui.http;
 		var jquery = layui.jquery;
-		var laydate = layui.laydate;
 		var upload = layui.upload;
 
 		vue.baseurl = http.baseurl;
-
-		// 从缓存中获取当前表名 (yonghu)
 		var table = localStorage.getItem("userTable");
 
 		if(!table){
-			layer.msg('请先登录', {
-				time: 2000,
-				icon: 5
-			}, function() {
+			layer.msg('请先登录', { time: 2000, icon: 5 }, function() {
 				window.parent.location.href = '../login/login.html';
 			});
 		}
 
-		// 关键修复：根据表名动态获取当前用户信息，保证数据渲染
 		http.request(`${table}/session`, 'get', {}, function(data) {
 			vue.sessionForm = data.data;
-			// 表单赋值
 			form.val("myForm", data.data);
-			// 头像赋值
 			if(data.data.touxiang){
 				jquery("#touxiangImg").attr("src", http.baseurl + data.data.touxiang);
 				jquery('#touxiang').val(data.data.touxiang);
@@ -382,17 +335,12 @@
 			element.render('nav');
 		});
 
-		// 头像上传组件
 		var touxiangUpload = upload.render({
 			elem: '#touxiangUpload',
 			url: http.baseurl + 'file/upload',
-			headers: {
-				'Token': localStorage.getItem('Token')
-			},
+			headers: { 'Token': localStorage.getItem('Token') },
 			accept: 'images',
-			before: function() {
-				layer.load(1);
-			},
+			before: function() { layer.load(1); },
 			done: function(res) {
 				layer.closeAll('loading');
 				if (res.code == 0) {
@@ -411,42 +359,35 @@
 			}
 		});
 
-		// 提交表单
 		form.on('submit(*)', function(data) {
 			data = data.field;
-			// 匹配数据库字段的验证规则
-			if(!data.yonghuzhanghao){
-				layer.msg('用户账号不能为空', {time: 2000, icon: 5});
-				return false;
-			}
-			if(!data.yonghuxingming){
-				layer.msg('用户姓名不能为空', {time: 2000, icon: 5});
-				return false;
-			}
-			if(!data.mima){
-				layer.msg('密码不能为空', {time: 2000, icon: 5});
-				return false;
-			}
-			if(data.dianhuahaoma && !isMobile(data.dianhuahaoma)){
-				layer.msg('电话号码应输入手机格式', {time: 2000, icon: 5});
-				return false;
-			}
-			if(data.jinjilianxiren && !isMobile(data.jinjilianxiren)){
-				layer.msg('紧急联系人应输入手机格式', {time: 2000, icon: 5});
-				return false;
-			}
+			if(!data.yonghuzhanghao){ layer.msg('用户账号不能为空', {time: 2000, icon: 5}); return false; }
+			if(!data.yonghuxingming){ layer.msg('用户姓名不能为空', {time: 2000, icon: 5}); return false; }
+			if(!data.mima){ layer.msg('密码不能为空', {time: 2000, icon: 5}); return false; }
+			if(data.dianhuahaoma && !isMobile(data.dianhuahaoma)){ layer.msg('电话号码应输入手机格式', {time: 2000, icon: 5}); return false; }
+			if(data.jinjilianxiren && !isMobile(data.jinjilianxiren)){ layer.msg('紧急联系人应输入手机格式', {time: 2000, icon: 5}); return false; }
 
-			// 关键修复：动态表名提交修改
 			http.requestJson(`${table}/update`, 'post', data, function(res) {
-				layer.msg('修改成功', {
-					time: 2000,
-					icon: 6
-				}, function() {
-					window.location.reload();
-				});
+				layer.msg('修改成功', { time: 2000, icon: 6 }, function() { window.location.reload(); });
 			});
-			return false; // 阻止表单跳转
+			return false;
 		});
+
+		// 动态调整内层局部 iframe 的高度防止出现双重滚动条
+		setInterval(function(){
+			var iframe = document.getElementById('center-iframe');
+			if (iframe) {
+				var iframeWin = iframe.contentWindow || iframe.contentDocument.parentWindow;
+				if (iframeWin.document && iframeWin.document.body) {
+					var scrollHeight = iframeWin.document.body.scrollHeight;
+					if(scrollHeight > 600) {
+						iframe.height = scrollHeight + 40; // 预留余量
+					} else {
+						iframe.height = 650;
+					}
+				}
+			}
+		}, 200);
 
 	});
 </script>
