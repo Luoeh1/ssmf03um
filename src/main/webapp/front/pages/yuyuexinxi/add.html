@@ -90,7 +90,7 @@
 			<div class="layui-form-item" pane>
 				<label class="layui-form-label">诊疗位置：</label>
 				<div class="layui-input-block">
-					<input v-model="detail.keshi" type="text" readonly name="keshi" id="keshi" autocomplete="off" class="layui-input" placeholder="选择诊疗名称后自动带出位置">
+					<input v-model="detail.xiangmuweizhi" type="text" readonly name="xiangmuweizhi" id="xiangmuweizhi" autocomplete="off" class="layui-input" placeholder="选择诊疗名称后自动带出位置">
 				</div>
 			</div>
 
@@ -178,7 +178,7 @@
 				yuyuebianhao: genTradeNo(),
 				xiangmufenlei: '',
 				xiangmumingcheng: '',
-				keshi: '', // 表面上叫诊疗位置，底层用keshi绑定数据库
+				xiangmuweizhi: '', // 真正的诊疗位置字段
 				yuyueshijian: '',
 				yonghuzhanghao: '',
 				feiyong: '',
@@ -195,7 +195,7 @@
 				yuyuebianhao : true,
 				xiangmufenlei : false,
 				xiangmumingcheng : false,
-				keshi : true, // 强制只读
+				xiangmuweizhi : true, // 强制只读
 				yuyueshijian : false,
 				yonghuzhanghao : true,
 				feiyong : true,
@@ -267,37 +267,41 @@
 					if(o=='yuyuebianhao'){ vue.detail.yuyuebianhao = obj[o]; continue; }
 					if(o=='xiangmufenlei'){ vue.detail.xiangmufenlei = obj[o]; vue.ro.xiangmufenlei = true; continue; }
 					if(o=='xiangmumingcheng'){ vue.detail.xiangmumingcheng = obj[o]; vue.ro.xiangmumingcheng = true; continue; }
-					if(o=='keshi'){ vue.detail.keshi = obj[o]; continue; }
+					if(o=='xiangmuweizhi'){ vue.detail.xiangmuweizhi = obj[o]; continue; }
 					if(o=='feiyong'){ vue.detail.feiyong = obj[o]; continue; }
 					if(o=='yishenggonghao'){ vue.detail.yishenggonghao = obj[o]; continue; }
 					if(o=='yishengxingming'){ vue.detail.yishengxingming = obj[o]; vue.ro.yishengxingming = true; continue; }
 				}
+				// 【核心修复1】：如果一进来就带有分类（如从详情页点过来），初始化时必须同时把医生也过滤掉！
 				if(vue.detail.xiangmufenlei) {
 					vue.projectOptions = vue.allProjects.filter(p => p.xiangmufenlei === vue.detail.xiangmufenlei);
+					vue.doctorOptions = vue.allDoctors.filter(d => d.keshi === vue.detail.xiangmufenlei);
 				}
 			}
 		}
 
 		// --- 超级联动逻辑 ---
 
-		// 事件 A：选【诊疗分类】 -> 过滤项目名称
+		// 事件 A：选【诊疗分类】 -> 过滤项目名称，并直接过滤科室医生
 		form.on('select(xiangmufenlei)', function(data) {
 			vue.detail.xiangmufenlei = data.value;
 			if(data.value) {
 				vue.projectOptions = vue.allProjects.filter(p => p.xiangmufenlei === data.value);
+				// 【核心修复2】：用户手选分类时，立刻根据“分类值”过滤医生的“科室(keshi)”
+				vue.doctorOptions = vue.allDoctors.filter(d => d.keshi === data.value);
 			} else {
 				vue.projectOptions = vue.allProjects;
+				vue.doctorOptions = vue.allDoctors;
 			}
 
 			// 清空下游的脏数据，并用jquery强制清空视图
 			vue.detail.xiangmumingcheng = '';
-			vue.detail.keshi = '';
+			vue.detail.xiangmuweizhi = '';
 			vue.detail.feiyong = '';
 			vue.detail.yishengxingming = '';
 			vue.detail.yishenggonghao = '';
-			vue.doctorOptions = vue.allDoctors;
 
-			jquery('#keshi').val('');
+			jquery('#xiangmuweizhi').val('');
 			jquery('#feiyong').val('');
 
 			vue.$nextTick(() => {
@@ -313,16 +317,16 @@
 			let proj = vue.allProjects.find(p => p.xiangmumingcheng === data.value);
 
 			if(proj) {
-				// 1. 自动填入诊疗位置(底层叫keshi) 和 费用
-				vue.detail.keshi = proj.keshi || '';
-				jquery('#keshi').val(vue.detail.keshi); // 强制更新UI
+				// 1. 自动填入真正的诊疗位置(xiangmuweizhi) 和 费用
+				vue.detail.xiangmuweizhi = proj.xiangmuweizhi || '';
+				jquery('#xiangmuweizhi').val(vue.detail.xiangmuweizhi);
 
 				vue.detail.feiyong = proj.feiyong || '0';
-				jquery('#feiyong').val(vue.detail.feiyong); // 强制更新UI
+				jquery('#feiyong').val(vue.detail.feiyong);
 
-				// 2. 核心：根据项目的科室严格过滤医生
-				if(proj.keshi) {
-					vue.doctorOptions = vue.allDoctors.filter(d => d.keshi === proj.keshi);
+				// 2. 【核心修复3】：根据项目的“分类(xiangmufenlei)” 去过滤医生的“科室(keshi)”
+				if(proj.xiangmufenlei) {
+					vue.doctorOptions = vue.allDoctors.filter(d => d.keshi === proj.xiangmufenlei);
 				} else {
 					vue.doctorOptions = vue.allDoctors;
 				}
@@ -376,7 +380,7 @@
 
 			if(!data.xiangmufenlei){ layer.msg('请选择诊疗分类', { time: 2000, icon: 5 }); return false; }
 			if(!data.xiangmumingcheng){ layer.msg('请选择诊疗名称', { time: 2000, icon: 5 }); return false; }
-			if(!data.yishengxingming){ layer.msg('请选择或等待系统匹配接诊医生', { time: 2000, icon: 5 }); return false; }
+			if(!data.yishengxingming){ layer.msg('该科室暂无接诊医生，请稍后再试', { time: 2000, icon: 5 }); return false; }
 
 			var crossuserid, crossrefid, crossoptnum;
 			if(http.getParam('cross')){

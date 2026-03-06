@@ -68,6 +68,19 @@ public class YuyuexinxiEntity<T> implements Serializable {
 	 */
 					
 	private String xiangmufenlei;
+
+	/**
+	 * 诊疗位置
+	 */
+	private String xiangmuweizhi;
+
+	public String getXiangmuweizhi() {
+		return xiangmuweizhi;
+	}
+
+	public void setXiangmuweizhi(String xiangmuweizhi) {
+		this.xiangmuweizhi = xiangmuweizhi;
+	}
 	
 	/**
 	 * 预约时间

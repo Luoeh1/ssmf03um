@@ -84,7 +84,7 @@
 		/* 预约票券式列表网格 */
 		.ticket-grid {
 			display: grid;
-			grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+			grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
 			gap: 25px;
 			margin-bottom: 40px;
 		}
@@ -131,10 +131,13 @@
 
 		.ticket-body { padding: 20px 25px; flex-grow: 1; }
 		.item-name { font-size: 20px; color: #1e293b; font-weight: bold; margin-bottom: 10px; }
-		.dept-name { font-size: 14px; color: #008476; background: rgba(0,132,118,0.1); padding: 3px 10px; border-radius: 6px; display: inline-block; margin-bottom: 15px;}
+
+		.tags-area { margin-bottom: 15px; display: flex; gap: 8px; flex-wrap: wrap; }
+		.dept-name { font-size: 13px; color: #008476; background: rgba(0,132,118,0.1); padding: 4px 10px; border-radius: 6px; display: inline-flex; align-items: center; }
+		.loc-name { font-size: 13px; color: #3b82f6; background: rgba(59,130,246,0.1); padding: 4px 10px; border-radius: 6px; display: inline-flex; align-items: center; }
 
 		.info-row { font-size: 14px; color: #64748b; margin-bottom: 8px; display: flex; align-items: center; }
-		.info-row i { margin-right: 8px; color: #cbd5e1; font-size: 16px; }
+		.info-row i { margin-right: 8px; color: #cbd5e1; font-size: 16px; width: 16px; text-align: center; }
 
 		/* 底部操作区 */
 		.ticket-footer {
@@ -144,7 +147,21 @@
 			display: flex;
 			justify-content: flex-end;
 			gap: 10px;
+			align-items: center;
 		}
+		/* 新增支付按钮单独样式 */
+		.btn-pay {
+			background: #f59e0b;
+			border: none;
+			color: #fff;
+			padding: 6px 15px;
+			border-radius: 6px;
+			font-size: 13px;
+			cursor: pointer;
+			transition: all 0.3s;
+		}
+		.btn-pay:hover { background: #d97706; transform: translateY(-1px); }
+
 		.btn-action {
 			background: #ffffff;
 			border: 1px solid #cbd5e1;
@@ -173,7 +190,7 @@
 			<input type="text" name="xiangmumingcheng" id="xiangmumingcheng" autocomplete="off" class="layui-input" placeholder="输入诊疗名称搜索">
 		</div>
 		<div>
-			<input type="text" name="keshi" id="keshi" autocomplete="off" class="layui-input" placeholder="输入科室名称搜索">
+			<input type="text" name="xiangmufenlei" id="xiangmufenlei" autocomplete="off" class="layui-input" placeholder="输入诊疗分类搜索">
 		</div>
 		<button class="search-btn" id="btn-search"><i class="layui-icon layui-icon-search"></i> 搜索记录</button>
 	</div>
@@ -189,20 +206,39 @@
 
 			<div class="ticket-body" @click="jump('../yuyuexinxi/detail.html?id='+item.id)" style="cursor: pointer;">
 				<div class="item-name">{{item.xiangmumingcheng}}</div>
-				<div class="dept-name" v-if="item.keshi">{{item.keshi}}</div>
+
+				<div class="tags-area">
+					<span class="dept-name" v-if="item.xiangmufenlei">{{item.xiangmufenlei}}</span>
+					<span class="loc-name" v-if="item.xiangmuweizhi"><i class="layui-icon layui-icon-location" style="font-size: 12px; margin-right: 3px;"></i> {{item.xiangmuweizhi}}</span>
+				</div>
 
 				<div class="info-row" v-if="item.yuyueshijian">
 					<i class="layui-icon layui-icon-time"></i> 预约时间: {{item.yuyueshijian}}
 				</div>
-				<div class="info-row" v-if="item.xingming">
-					<i class="layui-icon layui-icon-user"></i> 预约人: {{item.xingming}}
+				<div class="info-row" v-if="item.yishengxingming">
+					<i class="layui-icon layui-icon-username"></i> 接诊医生: {{item.yishengxingming}}
+					<span v-if="item.yishenggonghao" style="color:#94a3b8;font-size:12px;margin-left:5px;">({{item.yishenggonghao}})</span>
 				</div>
+				<div class="info-row" v-if="item.yonghuxingming">
+					<i class="layui-icon layui-icon-user"></i> 预约人: {{item.yonghuxingming}}
+				</div>
+				<div class="info-row" v-if="item.feiyong" style="color: #ef4444; font-weight: bold;">
+					<i class="layui-icon layui-icon-rmb"></i> 诊疗费用: ￥{{item.feiyong}}
+				</div>
+
 				<div class="info-row" v-if="item.shhf" style="color: #ef4444; margin-top: 10px; background: #fef2f2; padding: 8px; border-radius: 6px;">
 					<i class="layui-icon layui-icon-notice" style="color:#ef4444;"></i> 回复: {{item.shhf}}
 				</div>
 			</div>
 
 			<div class="ticket-footer">
+             <span v-if="item.ispay == '已支付'" style="color: #10b981; font-size: 13px; font-weight: bold; margin-right: auto;">
+                 <i class="layui-icon layui-icon-auz"></i> 已缴费
+             </span>
+				<button v-if="item.ispay == '未支付' && item.sfsh=='是'" class="btn-pay" @click="pay(item)" style="margin-right: auto;">
+					<i class="layui-icon layui-icon-rmb"></i> 立即缴费
+				</button>
+
 				<button class="btn-action" @click="jump('../yuyuexinxi/detail.html?id='+item.id)">查看详情</button>
 
 				<button v-if="isAuth('yuyuexinxi','修改')" class="btn-action" @click="jump('../yuyuexinxi/add.html?id='+item.id)">修改</button>
@@ -239,6 +275,10 @@
 			jump(url) {
 				jump(url);
 			},
+			pay(item) {
+				// 跳转到沙箱支付页面
+				window.location.href = `../pay.html?tablename=yuyuexinxi&payObject=yuyuebianhao&id=${item.id}`;
+			},
 			deleteData(item) {
 				var _this = this;
 				layui.layer.confirm('确认删除该预约记录吗？', function(index) {
@@ -270,8 +310,9 @@
 			if (jquery('#xiangmumingcheng').val()) {
 				param['xiangmumingcheng'] = '%' + jquery('#xiangmumingcheng').val() + '%';
 			}
-			if (jquery('#keshi').val()) {
-				param['keshi'] = '%' + jquery('#keshi').val() + '%';
+			// 改为读取真实的分类查询字段
+			if (jquery('#xiangmufenlei').val()) {
+				param['xiangmufenlei'] = '%' + jquery('#xiangmufenlei').val() + '%';
 			}
 
 			// 预约列表根据登录用户来过滤

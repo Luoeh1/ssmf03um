@@ -35,7 +35,7 @@
         </el-col>
         <el-col :span="12">
           <el-form-item class="select" v-if="type!='info'"  label="诊疗分类" prop="xiangmufenlei">
-            <el-select :disabled="ro.xiangmufenlei" v-model="ruleForm.xiangmufenlei" placeholder="请选择诊疗分类">
+            <el-select :disabled="ro.xiangmufenlei" @change="xiangmufenleiChange" v-model="ruleForm.xiangmufenlei" placeholder="请选择诊疗分类">
               <el-option
                   v-for="(item,index) in xiangmufenleiOptions"
                   v-bind:key="index"
@@ -95,9 +95,9 @@
 
         <el-col :span="12">
           <el-form-item class="select" v-if="type!='info'" label="接诊医生" prop="yishenggonghao">
-            <el-select :disabled="ro.yishenggonghao" @change="yishenggonghaoChange" v-model="ruleForm.yishenggonghao" placeholder="请选择接诊医生">
+            <el-select :disabled="ro.yishenggonghao" @change="yishenggonghaoChange" v-model="ruleForm.yishenggonghao" placeholder="请选择接诊医生(先选分类)">
               <el-option
-                  v-for="(item,index) in allDoctors"
+                  v-for="(item,index) in doctorOptions"
                   v-bind:key="index"
                   :label="item.yishengxingming + ' (' + item.yishenggonghao + ')'"
                   :value="item.yishenggonghao">
@@ -248,7 +248,8 @@ export default {
         yishengxingming: '',
       },
       xiangmufenleiOptions: [],
-      allDoctors: [], // 新增：保存系统里所有医生的完整数据
+      allDoctors: [], // 保存系统里所有医生的完整数据
+      doctorOptions: [], // 新增：供下拉框显示的过滤后的医生列表
       rules: {
         xiangmubianhao: [],
         xiangmumingcheng: [
@@ -365,20 +366,41 @@ export default {
         }
       });
 
-      // 核心修改：拉取所有医生的完整列表，取代原本只拉取工号的接口
+      // 核心修改：拉取所有医生的完整列表，并做好初始化过滤
       this.$http({
         url: `yisheng/page?page=1&limit=1000`,
         method: "get"
       }).then(({ data }) => {
         if (data && data.code === 0) {
           this.allDoctors = data.data.list;
+
+          // 如果是回显数据（或者刚才被带过来分类的），初始化过滤对应科室的医生
+          if(this.ruleForm.xiangmufenlei) {
+            this.doctorOptions = this.allDoctors.filter(item => item.keshi === this.ruleForm.xiangmufenlei);
+          } else {
+            this.doctorOptions = this.allDoctors;
+          }
+
         } else {
           this.$message.error(data.msg);
         }
       });
     },
 
-    // 本地极速秒带出逻辑
+    // 联动逻辑：当诊疗分类发生变化时触发
+    xiangmufenleiChange(val) {
+      // 1. 清空原先选错的医生
+      this.ruleForm.yishenggonghao = '';
+      this.ruleForm.yishengxingming = '';
+      // 2. 根据新选的分类（等同于医生的科室）去过滤下拉列表
+      if(val) {
+        this.doctorOptions = this.allDoctors.filter(item => item.keshi === val);
+      } else {
+        this.doctorOptions = this.allDoctors;
+      }
+    },
+
+    // 本地极速秒带出逻辑：选完医生带出姓名
     yishenggonghaoChange(val) {
       // 在拉取到的所有医生中，找出选中的那个医生
       let doc = this.allDoctors.find(item => item.yishenggonghao === val);
