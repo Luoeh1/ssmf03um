@@ -94,24 +94,6 @@
 			white-space: pre-wrap;
 		}
 
-		/* 原件影像图片展示区域 */
-		.origin-image-box {
-			margin-top: 30px;
-			border: 1px solid #e2e8f0;
-			padding: 20px;
-			border-radius: 8px;
-			text-align: center;
-			background: #f1f5f9;
-		}
-		.origin-image-box img {
-			max-width: 100%;
-			height: auto;
-			border-radius: 4px;
-			box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-			display: block;
-			margin: 0 auto;
-		}
-
 		/* 医师签名区 */
 		.signature-area {
 			margin-top: 60px;
@@ -164,35 +146,27 @@
 				<span class="label">报告编号:</span>
 				<span class="val">{{detail.baogaobianhao}}</span>
 			</div>
-			<div class="info-item" v-if="detail.jianchashijian">
-				<span class="label">检验日期:</span>
-				<span class="val">{{detail.jianchashijian}}</span>
+			<div class="info-item" v-if="detail.zhenduanshijian">
+				<span class="label">诊断时间:</span>
+				<span class="val">{{detail.zhenduanshijian}}</span>
 			</div>
-			<div class="info-item" v-if="detail.xingming">
+			<div class="info-item" v-if="detail.yonghuxingming">
 				<span class="label">患者姓名:</span>
-				<span class="val">{{detail.xingming}}</span>
+				<span class="val">{{detail.yonghuxingming}}</span>
 			</div>
-			<div class="info-item" v-if="detail.jianchaxiangmu">
-				<span class="label">检验诊疗:</span>
-				<span class="val">{{detail.jianchaxiangmu}}</span>
+			<div class="info-item" v-if="detail.xiangmumingcheng">
+				<span class="label">项目名称:</span>
+				<span class="val">{{detail.xiangmumingcheng}}</span>
+			</div>
+			<div class="info-item" v-if="detail.xiangmufenlei">
+				<span class="label">项目分类:</span>
+				<span class="val">{{detail.xiangmufenlei}}</span>
 			</div>
 		</div>
 
-		<div class="content-block" v-if="detail.jianchajieguo">
-			<div class="block-title">检验结果及临床意义</div>
-			<div class="block-text">{{detail.jianchajieguo}}</div>
-		</div>
-
-		<div class="origin-image-box" v-if="detail.tupian">
-			<div style="font-size: 14px; color:#64748b; margin-bottom: 15px; text-align: left; font-weight: bold;">
-				<i class="layui-icon layui-icon-picture"></i> 检验影像/化验单原件:
-			</div>
-			<img :src="detail.tupian ? baseurl + detail.tupian.split(',')[0] : ''" alt="检查影像原件">
-		</div>
-
-		<div class="content-block" v-if="detail.baogaoxiangqing" style="background: transparent; border: none; padding:0;">
-			<div class="block-title">详细数据指标</div>
-			<div class="block-text" v-html="detail.baogaoxiangqing"></div>
+		<div class="content-block" v-if="detail.zhenduanjieguo" style="background: transparent; border: none; padding:0;">
+			<div class="block-title">诊断结果及临床意义</div>
+			<div class="block-text" v-html="detail.zhenduanjieguo"></div>
 		</div>
 
 		<div class="signature-area">
@@ -233,15 +207,10 @@
 		vue.baseurl = http.baseurl;
 
 		http.request(`jianchabaogao/detail/` + id, 'get', {}, function(res) {
-			// 清理图片路径
-			if(res.data.tupian && res.data.tupian.indexOf('http') == -1) {
-				res.data.tupian = res.data.tupian.replace(http.baseurl,"");
+			// 处理富文本图片路径问题，字段名修正为 zhenduanjieguo
+			if(res.data.zhenduanjieguo) {
+				res.data.zhenduanjieguo = res.data.zhenduanjieguo.replace(/src="upload\//g, 'src="' + vue.baseurl + 'upload/');
 			}
-			// 处理富文本图片路径问题
-			if(res.data.baogaoxiangqing) {
-				res.data.baogaoxiangqing = res.data.baogaoxiangqing.replace(/src="upload\//g, 'src="' + vue.baseurl + 'upload/');
-			}
-
 			vue.detail = res.data;
 		});
 	});

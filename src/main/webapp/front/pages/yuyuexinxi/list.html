@@ -275,9 +275,31 @@
 			jump(url) {
 				jump(url);
 			},
+			// 模拟支付方法
+			// 模拟支付方法
 			pay(item) {
-				// 跳转到沙箱支付页面
-				window.location.href = `../pay.html?tablename=yuyuexinxi&payObject=yuyuebianhao&id=${item.id}`;
+				layui.layer.confirm('确认支付 ￥' + item.feiyong + ' 吗？', {
+					icon: 3,
+					title: '支付提示',
+					offset: '150px'  // 【关键修改】强制设定弹窗距离页面顶部 150px，防止乱飘
+				}, function(index) {
+					// 深拷贝当前对象以避免直接修改引用导致页面闪烁，然后再提交
+					let data = JSON.parse(JSON.stringify(item));
+					data.ispay = '已支付';
+
+					// 调用更新接口
+					layui.http.requestJson('yuyuexinxi/update', 'post', data, function(res) {
+						layui.layer.msg('缴费成功！', {
+							time: 2000,
+							icon: 6,
+							offset: '150px' // 【关键修改】提示框也强制固定在顶部 150px
+						}, function() {
+							// 关闭弹窗并刷新当前页面
+							layui.layer.close(index);
+							window.location.reload();
+						});
+					});
+				});
 			},
 			deleteData(item) {
 				var _this = this;

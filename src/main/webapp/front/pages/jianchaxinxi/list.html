@@ -122,19 +122,21 @@
 			box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
 		}
 
+		/* 使用纯色+Icon渐变背景替代数据库不存在的图片 */
 		.card-img-wrap {
 			width: 100%;
-			height: 220px;
+			height: 180px;
 			overflow: hidden;
 			background-color: #f1f5f9;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
 		}
-		.card-img-wrap img {
-			width: 100%;
-			height: 100%;
-			object-fit: cover;
+		.card-img-wrap i {
 			transition: transform 0.5s ease;
 		}
-		.item-card:hover .card-img-wrap img { transform: scale(1.05); }
+		.item-card:hover .card-img-wrap i { transform: scale(1.15); }
 
 		.card-content {
 			padding: 20px;
@@ -167,10 +169,13 @@
 			margin-top: auto;
 			padding-top: 15px;
 			border-top: 1px dashed #f1f5f9;
-			font-size: 18px;
-			color: #ef4444;
+			font-size: 15px;
+			color: #008476;
 			font-weight: bold;
+			display: flex;
+			align-items: center;
 		}
+		.card-price i { margin-right: 5px; font-weight: normal; }
 
 		/* Layui 分页器 */
 		.layui-laypage { display: block; text-align: center; }
@@ -180,33 +185,43 @@
 </head>
 <body>
 <div id="app" class="list-container">
-	<div class="page-title">医疗检查服务诊疗</div>
+	<div class="page-title">医疗检查记录与安排</div>
 
 	<div class="search-bar">
 		<div>
-			<input type="text" name="jianchamingcheng" id="jianchamingcheng" autocomplete="off" class="layui-input" placeholder="输入检查名称搜索">
+			<input type="text" name="xiangmumingcheng" id="xiangmumingcheng" autocomplete="off" class="layui-input" placeholder="输入检查项目名称搜索">
 		</div>
-		<button class="search-btn" id="btn-search"><i class="layui-icon layui-icon-search"></i> 搜索</button>
+		<div>
+			<input type="text" name="yonghuxingming" id="yonghuxingming" autocomplete="off" class="layui-input" placeholder="输入患者姓名搜索">
+		</div>
+		<button class="search-btn" id="btn-search"><i class="layui-icon layui-icon-search"></i> 检索</button>
 
 		<button v-if="isAuth('jianchaxinxi','新增')" @click="jump('../jianchaxinxi/add.html')" class="add-btn">
-			<i class="layui-icon layui-icon-add-1"></i> 发布检查项
+			<i class="layui-icon layui-icon-add-1"></i> 录入检查记录
 		</button>
 	</div>
 
 	<div class="data-grid">
 		<a v-for="(item,index) in dataList" :key="index" @click="jump('../jianchaxinxi/detail.html?id='+item.id)" class="item-card">
 			<div class="card-img-wrap">
-				<img :src="item.tupian ? baseurl + item.tupian.split(',')[0] : (item.jianchatupian ? baseurl + item.jianchatupian.split(',')[0] : '../../layui/images/face/0.gif')">
+				<i class="layui-icon layui-icon-form" style="font-size: 80px; color: #0284c7;"></i>
 			</div>
 			<div class="card-content">
-				<div class="card-title">{{item.jianchamingcheng || item.jianchaxiangmu || '检查诊疗'}}</div>
-				<div class="card-info" v-if="item.jianchaxiangmu">
-					<i class="layui-icon layui-icon-app"></i>诊疗: {{item.jianchaxiangmu}}
+				<div class="card-title">{{item.xiangmumingcheng || '检查信息记录'}}</div>
+
+				<div class="card-info" v-if="item.jianchabianhao">
+					<i class="layui-icon layui-icon-barcode"></i>编号: {{item.jianchabianhao}}
 				</div>
-				<div class="card-info" v-if="item.jianchadidian">
-					<i class="layui-icon layui-icon-location"></i>地点: {{item.jianchadidian}}
+				<div class="card-info" v-if="item.xiangmufenlei">
+					<i class="layui-icon layui-icon-app"></i>分类: {{item.xiangmufenlei}}
 				</div>
-				<div class="card-price" v-if="item.feiyong || item.jianchafeiyong">￥{{item.feiyong || item.jianchafeiyong}}</div>
+				<div class="card-info" v-if="item.yonghuxingming">
+					<i class="layui-icon layui-icon-user"></i>患者: {{item.yonghuxingming}}
+				</div>
+
+				<div class="card-price" v-if="item.jianchashijian">
+					<i class="layui-icon layui-icon-time"></i> 时间: {{item.jianchashijian}}
+				</div>
 			</div>
 		</a>
 	</div>
@@ -248,16 +263,29 @@
 		var limit = 12;
 
 		function getDataList(page) {
-			var param = { page: page, limit: limit }
-			if (jquery('#jianchamingcheng').val()) {
-				param['jianchamingcheng'] = '%' + jquery('#jianchamingcheng').val() + '%';
+			var param = { page: page, limit: limit };
+
+			// 【安全修复：数据隔离/防越权】---------------------------------------------
+			var sessionTable = localStorage.getItem('sessionTable');
+			var adminName = localStorage.getItem('adminName');
+
+			if(sessionTable === 'yonghu') {
+				param['yonghuzhanghao'] = adminName;
+			}
+			if(sessionTable === 'yisheng') {
+				param['yishenggonghao'] = adminName;
+			}
+			// ----------------------------------------------------------------------
+
+			// 搜索字段匹配修正
+			if (jquery('#xiangmumingcheng').val()) {
+				param['xiangmumingcheng'] = '%' + jquery('#xiangmumingcheng').val() + '%';
+			}
+			if (jquery('#yonghuxingming').val()) {
+				param['yonghuxingming'] = '%' + jquery('#yonghuxingming').val() + '%';
 			}
 
 			http.request('jianchaxinxi/list', 'get', param, function(res) {
-				for(let i=0; i<res.data.list.length; i++) {
-					if(res.data.list[i].tupian) res.data.list[i].tupian = res.data.list[i].tupian.replace(http.baseurl, "");
-					if(res.data.list[i].jianchatupian) res.data.list[i].jianchatupian = res.data.list[i].jianchatupian.replace(http.baseurl, "");
-				}
 				vue.dataList = res.data.list;
 
 				laypage.render({

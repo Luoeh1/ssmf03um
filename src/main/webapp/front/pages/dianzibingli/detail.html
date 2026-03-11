@@ -183,13 +183,13 @@
 				<span class="label">就诊日期:</span>
 				<span class="val">{{detail.addtime.split(' ')[0]}}</span>
 			</div>
-			<div class="info-item" v-if="detail.xingming">
+			<div class="info-item" v-if="detail.yonghuxingming">
 				<span class="label">患者姓名:</span>
-				<span class="val">{{detail.xingming}}</span>
+				<span class="val">{{detail.yonghuxingming}}</span>
 			</div>
-			<div class="info-item" v-if="detail.zhanghao">
+			<div class="info-item" v-if="detail.yonghuzhanghao">
 				<span class="label">患者账号:</span>
-				<span class="val">{{detail.zhanghao}}</span>
+				<span class="val">{{detail.yonghuzhanghao}}</span>
 			</div>
 			<div class="info-item" v-if="detail.keshi">
 				<span class="label">就诊科室:</span>
@@ -197,14 +197,14 @@
 			</div>
 		</div>
 
-		<div class="content-block" v-if="detail.bingzhuang">
+		<div class="content-block" v-if="detail.zhengzhuang">
 			<div class="block-title">主诉与现病史</div>
-			<div class="block-text">{{detail.bingzhuang}}</div>
+			<div class="block-text">{{detail.zhengzhuang}}</div>
 		</div>
 
-		<div class="content-block" v-if="detail.zhenduanjieguo">
+		<div class="content-block" v-if="detail.jianchazhenduan">
 			<div class="block-title">诊断结果</div>
-			<div class="block-text">{{detail.zhenduanjieguo}}</div>
+			<div class="block-text">{{detail.jianchazhenduan}}</div>
 		</div>
 
 		<div class="content-block" v-if="detail.yaopinxinxi || detail.yizhu">
@@ -213,9 +213,9 @@
 			<div class="block-text" v-if="detail.yizhu" style="margin-top: 10px;"><strong>医嘱提醒：</strong><br/>{{detail.yizhu}}</div>
 		</div>
 
-		<div class="content-block" v-if="detail.xiangqing" style="background: transparent; border: none; padding:0;">
+		<div class="content-block" v-if="detail.bingqingxiangshu" style="background: transparent; border: none; padding:0;">
 			<div class="block-title">详细记录</div>
-			<div class="block-text" v-html="detail.xiangqing"></div>
+			<div class="block-text" v-html="detail.bingqingxiangshu"></div>
 		</div>
 
 		<div class="signature-area">
@@ -268,8 +268,8 @@
 		http.request(`dianzibingli/detail/` + id, 'get', {}, function(res) {
 			vue.detail = res.data;
 			// 处理可能存在的富文本图片路径问题
-			if(vue.detail.xiangqing) {
-				vue.detail.xiangqing = vue.detail.xiangqing.replace(/src="upload\//g, 'src="' + vue.baseurl + 'upload/');
+			if(vue.detail.bingqingxiangshu) {
+				vue.detail.bingqingxiangshu = vue.detail.bingqingxiangshu.replace(/src="upload\//g, 'src="' + vue.baseurl + 'upload/');
 			}
 		});
 	});

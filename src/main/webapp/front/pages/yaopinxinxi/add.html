@@ -83,7 +83,7 @@
 			<div class="layui-form-item" pane>
 				<label class="layui-form-label">药品名称：</label>
 				<div class="layui-input-block">
-					<input v-model="detail.yaopinmingcheng" type="text" :readonly="ro.yaopinmingcheng" name="yaopinmingcheng" id="yaopinmingcheng" autocomplete="off" class="layui-input" placeholder="输入药品全称" lay-verify="required">
+					<input v-model="detail.yaopinmingcheng" type="text" :readonly="ro.yaopinmingcheng" name="yaopinmingcheng" id="yaopinmingcheng" autocomplete="off" class="layui-input" placeholder="输入药品全称">
 				</div>
 			</div>
 
@@ -151,10 +151,10 @@
 				</div>
 			</div>
 
-			<div class="layui-form-item" pane>
-				<label class="layui-form-label">药品说明书：</label>
+			<div class="layui-form-item layui-form-text" pane>
+				<label class="layui-form-label">详细介绍/说明书：</label>
 				<div class="layui-input-block">
-					<textarea name="yaopinxiangqing" id="yaopinxiangqing">请录入详细的药品成分、适应症、用法用量及不良反应...</textarea>
+					<textarea v-model="detail.yaopinxiangqing" name="yaopinxiangqing" id="yaopinxiangqing" class="layui-textarea" style="height: 300px; padding: 15px; font-size: 15px;" placeholder="请录入详细的药品成分、适应症、用法用量及不良反应..."></textarea>
 				</div>
 			</div>
 
@@ -211,7 +211,8 @@
 		}
 	})
 
-	layui.use(['layer', 'element', 'http', 'jquery', 'form', 'upload', 'laydate', 'tinymce'], function() {
+	// 移除了 tinymce 组件的引入
+	layui.use(['layer', 'element', 'http', 'jquery', 'form', 'upload', 'laydate'], function() {
 		var layer = layui.layer;
 		var element = layui.element;
 		var http = layui.http;
@@ -219,7 +220,6 @@
 		var form = layui.form;
 		var upload = layui.upload;
 		var laydate = layui.laydate;
-		var tinymce = layui.tinymce;
 		vue.baseurl = http.baseurl;
 
 		// 初始化日期选择器
@@ -287,37 +287,13 @@
 			});
 		}
 
-		// 富文本编辑器
-		var edit = tinymce.render({
-			elem: "#yaopinxiangqing",
-			height: 400,
-			images_upload_handler: function(blobInfo, succFun, failFun) {
-				var xhr, formData;
-				var file = blobInfo.blob();
-				xhr = new XMLHttpRequest();
-				xhr.withCredentials = false;
-				xhr.open('POST', http.baseurl + 'file/upload');
-				xhr.setRequestHeader("Token", localStorage.getItem('Token'));
-				xhr.onload = function() {
-					var json;
-					if (xhr.status != 200) { failFun('HTTP Error: ' + xhr.status); return; }
-					json = JSON.parse(xhr.responseText);
-					if (!json || typeof json.file != 'string') { failFun('Invalid JSON: ' + xhr.responseText); return; }
-					succFun(http.baseurl + 'upload/' + json.file);
-				};
-				formData = new FormData();
-				formData.append('file', file, file.name);
-				xhr.send(formData);
-			}
-		}, (opt) => { });
-
 		// 提交
 		form.on('submit(*)', function(data) {
 			data = data.field;
-			// 同步富文本
-			var rContent = tinymce.get('#yaopinxiangqing').getContent();
-			data.yaopinxiangqing = rContent;
-			data.xiangqing = rContent; // 兼容不同版本的字段名
+
+			// 直接获取普通 textarea 绑定的文本内容，废弃原来的 tinymce
+			data.yaopinxiangqing = jquery('#yaopinxiangqing').val();
+			data.xiangqing = data.yaopinxiangqing; // 兼容不同版本的字段名
 
 			// 同步日期
 			if(jquery('#shengchanriqi').val()){ data.shengchanriqi = jquery('#shengchanriqi').val(); }

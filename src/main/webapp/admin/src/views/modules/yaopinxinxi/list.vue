@@ -69,10 +69,6 @@
                 @click="deleteHandler()"
             >{{ contents.btnAdAllFont == 1?'删除':'' }}</el-button>
 
-
-
-
-
           </el-form-item>
         </el-row>
       </el-form>
@@ -134,56 +130,7 @@
               {{scope.row.feiyong}}
             </template>
           </el-table-column>
-          <el-table-column  :sortable="contents.tableSortable" :align="contents.tableAlign"
-                            prop="kaiyaoshijian"
-                            :header-align="contents.tableAlign"
-                            label="开药时间">
-            <template slot-scope="scope">
-              {{scope.row.kaiyaoshijian}}
-            </template>
-          </el-table-column>
-          <el-table-column  :sortable="contents.tableSortable" :align="contents.tableAlign"
-                            prop="yishenggonghao"
-                            :header-align="contents.tableAlign"
-                            label="医生工号">
-            <template slot-scope="scope">
-              {{scope.row.yishenggonghao}}
-            </template>
-          </el-table-column>
-          <el-table-column  :sortable="contents.tableSortable" :align="contents.tableAlign"
-                            prop="yishengxingming"
-                            :header-align="contents.tableAlign"
-                            label="医生姓名">
-            <template slot-scope="scope">
-              {{scope.row.yishengxingming}}
-            </template>
-          </el-table-column>
-          <el-table-column  :sortable="contents.tableSortable" :align="contents.tableAlign"
-                            prop="yonghuzhanghao"
-                            :header-align="contents.tableAlign"
-                            label="用户账号">
-            <template slot-scope="scope">
-              {{scope.row.yonghuzhanghao}}
-            </template>
-          </el-table-column>
-          <el-table-column  :sortable="contents.tableSortable" :align="contents.tableAlign"
-                            prop="yonghuxingming"
-                            :header-align="contents.tableAlign"
-                            label="用户姓名">
-            <template slot-scope="scope">
-              {{scope.row.yonghuxingming}}
-            </template>
-          </el-table-column>
-          <el-table-column
-              :sortable="contents.tableSortable" :align="contents.tableAlign"
-              prop="ispay"
-              :header-align="contents.tableAlign"
-              label="是否支付">
-            <template slot-scope="scope">
-              <span style="margin-right:10px">{{scope.row.ispay=='已支付'?'已支付':'未支付'}}</span>
-              <el-button v-if="scope.row.ispay!='已支付' && isAuth('yaopinxinxi','支付') " type="text" icon="el-icon-edit" size="small" @click="payHandler(scope.row)">支付</el-button>
-            </template>
-          </el-table-column>
+
           <el-table-column width="300" :align="contents.tableAlign"
                            :header-align="contents.tableAlign"
                            label="操作">

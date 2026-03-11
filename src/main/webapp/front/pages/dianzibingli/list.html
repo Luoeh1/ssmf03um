@@ -15,7 +15,7 @@
 		}
 
 		.list-container {
-			max-width: 1200px; /* 档案类列表稍微收窄一点，更易阅读 */
+			max-width: 1200px;
 			margin: 0 auto;
 			padding: 30px 20px;
 			box-sizing: border-box;
@@ -197,7 +197,7 @@
 			<input type="text" name="binglibianhao" id="binglibianhao" autocomplete="off" class="layui-input" placeholder="输入病历编号搜索">
 		</div>
 		<div>
-			<input type="text" name="xingming" id="xingming" autocomplete="off" class="layui-input" placeholder="输入患者姓名搜索">
+			<input type="text" name="yonghuxingming" id="yonghuxingming" autocomplete="off" class="layui-input" placeholder="输入患者姓名搜索">
 		</div>
 		<button class="search-btn" id="btn-search"><i class="layui-icon layui-icon-search"></i> 检索档案</button>
 
@@ -211,14 +211,14 @@
 			<div class="doc-main">
 				<div class="doc-title">
 					<i class="layui-icon layui-icon-form" style="color: #008476;"></i>
-					{{item.binglimingcheng || '电子病历文档'}}
+					{{item.yonghuxingming ? item.yonghuxingming + '的病历档案' : '电子病历文档'}}
 					<span class="tag">正式档案</span>
 				</div>
 				<div class="doc-info-row">
 					<span v-if="item.binglibianhao"><i class="layui-icon layui-icon-barcode"></i> 病历编号: {{item.binglibianhao}}</span>
-					<span v-if="item.xingming"><i class="layui-icon layui-icon-user"></i> 患者姓名: {{item.xingming}}</span>
+					<span v-if="item.yonghuxingming"><i class="layui-icon layui-icon-user"></i> 患者姓名: {{item.yonghuxingming}}</span>
 					<span v-if="item.yishengxingming"><i class="layui-icon layui-icon-username"></i> 主治医生: {{item.yishengxingming}}</span>
-					<span v-if="item.addtime"><i class="layui-icon layui-icon-time"></i> 记录时间: {{item.addtime.split(' ')[0]}}</span>
+					<span v-if="item.addtime"><i class="layui-icon layui-icon-time"></i> 记录时间: {{item.addtime ? item.addtime.split(' ')[0] : ''}}</span>
 				</div>
 			</div>
 			<div class="doc-action">
@@ -274,14 +274,31 @@
 		var limit = 10;
 
 		function getDataList(page) {
-			var param = { page: page, limit: limit }
+			var param = { page: page, limit: limit };
+
+			// 【安全修复：数据隔离】----------------------------------------------------
+			var sessionTable = localStorage.getItem('sessionTable');  // 获取当前登录角色
+			var adminName = localStorage.getItem('adminName');        // 获取当前登录账号
+
+			// 如果是普通用户（患者），强制附加查询条件：只查自己的账号
+			if(sessionTable === 'yonghu') {
+				param['yonghuzhanghao'] = adminName;
+			}
+			// 如果是医生，强制附加查询条件：只查自己开的病历
+			if(sessionTable === 'yisheng') {
+				param['yishenggonghao'] = adminName;
+			}
+			// ----------------------------------------------------------------------
+
+			// 搜索条件获取
 			if (jquery('#binglibianhao').val()) {
 				param['binglibianhao'] = '%' + jquery('#binglibianhao').val() + '%';
 			}
-			if (jquery('#xingming').val()) {
-				param['xingming'] = '%' + jquery('#xingming').val() + '%';
+			if (jquery('#yonghuxingming').val()) { // 【修复4】搜索字段匹配
+				param['yonghuxingming'] = '%' + jquery('#yonghuxingming').val() + '%';
 			}
 
+			// 发起请求
 			http.request('dianzibingli/list', 'get', param, function(res) {
 				vue.dataList = res.data.list;
 				laypage.render({
