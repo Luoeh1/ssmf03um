@@ -22,7 +22,7 @@ import com.baomidou.mybatisplus.enums.IdType;
 
 
 /**
- * 医院公告
+ * 社区公告
  * 数据库通用操作实体类（普通增删改查）
  * @author 
  * @email 

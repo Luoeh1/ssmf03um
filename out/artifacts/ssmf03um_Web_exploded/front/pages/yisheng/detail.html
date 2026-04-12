@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>医生详情</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="../../layui/css/layui.css">
+	<style>
+		body, html {
+			margin: 0;
+			padding: 0;
+			background-color: #f5f8fa;
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+			min-height: 100vh;
+		}
+
+		.detail-container {
+			max-width: 1200px;
+			margin: 40px auto;
+			padding: 0 20px;
+			box-sizing: border-box;
+		}
+
+		/* 面包屑导航 */
+		.breadcrumb {
+			margin-bottom: 25px;
+			font-size: 15px;
+			color: #64748b;
+			display: flex;
+			align-items: center;
+		}
+		.breadcrumb a { color: #475569; text-decoration: none; transition: color 0.3s; }
+		.breadcrumb a:hover { color: #008476; }
+		.breadcrumb span { margin: 0 10px; color: #cbd5e1; }
+
+		/* 专家名片横向区块 */
+		.doctor-profile-card {
+			background: #ffffff;
+			border-radius: 20px;
+			padding: 40px;
+			display: flex;
+			gap: 50px;
+			box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+			margin-bottom: 30px;
+			align-items: flex-start;
+		}
+
+		/* 左侧头像区域 */
+		.avatar-area {
+			flex: 0 0 220px;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+		.avatar-area img {
+			width: 220px;
+			height: 220px;
+			border-radius: 16px;
+			object-fit: cover;
+			border: 5px solid #f8fafc;
+			box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+		}
+
+		/* 右侧详情资料 */
+		.info-area {
+			flex: 1;
+			display: flex;
+			flex-direction: column;
+		}
+
+		.name-row {
+			display: flex;
+			align-items: center;
+			margin-bottom: 15px;
+			gap: 15px;
+		}
+		.doc-name {
+			font-size: 32px;
+			color: #1e293b;
+			font-weight: bold;
+			margin: 0;
+		}
+		.doc-dept {
+			background: #e0f2fe;
+			color: #ef4444;
+			padding: 6px 16px;
+			border-radius: 20px;
+			font-size: 14px;
+			font-weight: 600;
+		}
+		.doc-gender {
+			font-size: 15px;
+			color: #64748b;
+		}
+
+		/* 基本属性列表 */
+		.attr-grid {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 20px;
+			background: #f8fafc;
+			padding: 25px;
+			border-radius: 16px;
+			margin-bottom: 25px;
+		}
+		.attr-item {
+			display: flex;
+			font-size: 15px;
+		}
+		.attr-item .label {
+			color: #64748b;
+			width: 80px;
+			flex-shrink: 0;
+		}
+		.attr-item .val {
+			color: #334155;
+			font-weight: 500;
+		}
+
+		/* 按钮与交互区域，完全保留原生逻辑所需的样式 */
+		.action-area {
+			margin-top: auto;
+			display: flex;
+			gap: 15px;
+		}
+		.btn-primary {
+			background: linear-gradient(135deg, #00b4db 0%, #008476 100%);
+			color: white;
+			border: none;
+			padding: 0 35px;
+			height: 48px;
+			border-radius: 8px;
+			font-size: 16px;
+			font-weight: 500;
+			cursor: pointer;
+			box-shadow: 0 4px 15px rgba(0, 132, 118, 0.3);
+			transition: all 0.3s;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		.btn-primary:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 6px 20px rgba(0, 132, 118, 0.4);
+			color: white;
+		}
+
+		/* 下部：详情长文卡片 */
+		.content-card {
+			background: #ffffff;
+			border-radius: 20px;
+			padding: 40px;
+			box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+		}
+		.section-title {
+			font-size: 20px;
+			color: #1e293b;
+			font-weight: 600;
+			margin-bottom: 25px;
+			padding-bottom: 15px;
+			border-bottom: 1px solid #e2e8f0;
+			display: flex;
+			align-items: center;
+		}
+		.section-title::before {
+			content: '';
+			display: block;
+			width: 4px;
+			height: 18px;
+			background: #008476;
+			border-radius: 2px;
+			margin-right: 10px;
+		}
+		.rich-text-content {
+			font-size: 16px;
+			line-height: 1.8;
+			color: #334155;
+		}
+		.rich-text-content img {
+			max-width: 100%;
+			border-radius: 8px;
+			margin: 15px 0;
+		}
+
+		@media (max-width: 768px) {
+			.doctor-profile-card { flex-direction: column; align-items: center; padding: 25px; }
+			.attr-grid { grid-template-columns: 1fr; }
+		}
+	</style>
+</head>
+<body>
+<div id="app" class="detail-container">
+
+	<div class="breadcrumb">
+		<a href="javascript:window.history.back();"><i class="layui-icon layui-icon-left"></i> 返回列表</a>
+		<span>/</span>
+		医生详情
+	</div>
+
+	<div class="doctor-profile-card">
+		<div class="avatar-area">
+			<img :src="detail.touxiang ? baseurl + detail.touxiang.split(',')[0] : '../../layui/images/face/0.gif'" alt="医生头像">
+		</div>
+
+		<div class="info-area">
+			<div class="name-row">
+				<h1 class="doc-name">{{detail.yishengxingming}}</h1>
+				<span class="doc-gender">({{detail.yishengxingbie}})</span>
+				<span class="doc-dept" v-if="detail.keshi">{{detail.keshi}}</span>
+			</div>
+
+			<div class="attr-grid">
+				<div class="attr-item" v-if="detail.yishenggonghao">
+					<div class="label">医生工号：</div>
+					<div class="val">{{detail.yishenggonghao}}</div>
+				</div>
+				<div class="attr-item" v-if="detail.lianxidianhua">
+					<div class="label">联系电话：</div>
+					<div class="val">{{detail.lianxidianhua}}</div>
+				</div>
+			</div>
+
+			<div class="action-area">
+				<button v-if="isAuth('yisheng','预约挂号')" @click="onAcrossTap('yuyueguahao','','','')" type="button" class="btn-primary">
+					<i class="layui-icon layui-icon-add-circle" style="margin-right: 5px;"></i> 预约挂号
+				</button>
+				<button v-if="isAuth('yisheng','在线咨询')" @click="onAcrossTap('zaixianzixun','','','')" type="button" class="btn-primary">
+					<i class="layui-icon layui-icon-dialogue" style="margin-right: 5px;"></i> 在线咨询
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<div class="content-card">
+		<div class="section-title">专家个人简介</div>
+		<div class="rich-text-content" v-html="detail.gerenjianjie">
+		</div>
+	</div>
+
+</div>
+
+<script src="../../layui/layui.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/config.js"></script>
+<script src="../../modules/config.js"></script>
+<script src="../../js/utils.js"></script>
+
+<script>
+	var vue = new Vue({
+		el: '#app',
+		data: {
+			// 轮播图列表
+			swiperList: [],
+			// 数据详情
+			detail: {
+				id: 0
+			},
+			title: '',
+			count: 0,
+			buynumber: 1,
+			detailTable: 'yisheng',
+			baseurl: '',
+			dataList: [],
+		},
+		destroyed: function() {
+			window.clearInterval(this.inter);
+		},
+		methods: {
+			jump(url) {
+				jump(url)
+			},
+			isAuth(tablename, button) {
+				return isFrontAuth(tablename, button)
+			},
+			// 完整保留跨表功能逻辑
+			onAcrossTap(tableName, crossOptAudit, statusColumnName, tips, statusColumnValue) {
+				localStorage.setItem('crossTable', `yisheng`);
+				localStorage.setItem('crossObj', JSON.stringify(this.detail));
+				localStorage.setItem('statusColumnName', statusColumnName);
+				localStorage.setItem('statusColumnValue', statusColumnValue);
+				localStorage.setItem('tips', tips);
+				if(statusColumnName!=''&&!statusColumnName.startsWith("[")) {
+					var obj = JSON.parse(localStorage.getItem('crossObj'));
+					for (var o in obj){
+						if(o==statusColumnName && obj[o]==statusColumnValue){
+							layer.msg(tips, {
+								time: 2000,
+								icon: 5
+							});
+							return
+						}
+					}
+				}
+				jump(`../${tableName}/add.html?corss=true`);
+			},
+		}
+	});
+
+	layui.use(['layer', 'form', 'element', 'carousel', 'http', 'jquery', 'laypage'], function() {
+		var layer = layui.layer;
+		var element = layui.element;
+		var form = layui.form;
+		var carousel = layui.carousel;
+		var http = layui.http;
+		var jquery = layui.jquery;
+		var laypage = layui.laypage;
+
+		var id = http.getParam('id');
+		vue.detail.id = id;
+		vue.baseurl = http.baseurl;
+
+		// 获取医生详情信息
+		http.request(`${vue.detailTable}/detail/` + id, 'get', {}, function(res) {
+			vue.detail = res.data;
+			vue.title = vue.detail.yishengxingming;
+
+			// 图片路径清洗防错
+			if(vue.detail.touxiang && vue.detail.touxiang.indexOf('http') == -1) {
+				vue.detail.touxiang = vue.detail.touxiang.replace(http.baseurl,"");
+			}
+
+			// 富文本内部图片路径修复
+			if(vue.detail.gerenjianjie) {
+				vue.detail.gerenjianjie = vue.detail.gerenjianjie.replace(/src="upload\//g, 'src="' + vue.baseurl + 'upload/');
+			}
+		});
+	});
+</script>
+</body>
+</html>

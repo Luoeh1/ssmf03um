@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>用户列表</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="../../layui/css/layui.css">
+	<style>
+		body, html {
+			margin: 0; padding: 0; background-color: #f8fafc; /* 更浅的灰底色 */
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+			min-height: 100vh;
+		}
+
+		.list-container {
+			max-width: 1400px; margin: 0 auto; padding: 30px 20px; box-sizing: border-box;
+		}
+
+		.page-title {
+			font-size: 22px; color: #0f172a; font-weight: 600; margin-bottom: 20px; display: flex; align-items: center;
+		}
+		.page-title::before {
+			content: ''; display: block; width: 5px; height: 20px;
+			background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%); /* 商务靛蓝 */
+			border-radius: 4px; margin-right: 12px;
+		}
+
+		/* 搜索栏 */
+		.search-bar {
+			background: #ffffff; padding: 20px 25px; border-radius: 16px;
+			box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02); margin-bottom: 30px;
+			display: flex; flex-wrap: wrap; align-items: center; gap: 15px;
+		}
+		.search-bar .layui-input {
+			width: 240px; height: 42px; border-radius: 8px; border: 1px solid #e2e8f0;
+			background-color: #f1f5f9; color: #334155; transition: all 0.3s;
+		}
+		.search-bar .layui-input:focus {
+			background-color: #ffffff; border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+		}
+		.search-btn {
+			height: 42px; padding: 0 25px; border-radius: 8px; background: #4f46e5; color: #fff;
+			border: none; font-size: 14px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 5px;
+		}
+		.search-btn:hover { background: #4338ca; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2); }
+
+		.add-btn {
+			height: 42px; padding: 0 25px; border-radius: 8px; background: #ffffff; color: #4f46e5;
+			border: 1px solid #4f46e5; font-size: 14px; cursor: pointer; transition: all 0.3s;
+			display: flex; align-items: center; gap: 5px; margin-left: auto;
+		}
+		.add-btn:hover { background: rgba(79, 70, 229, 0.05); transform: translateY(-2px); }
+
+		/* 团队名片网格 */
+		.data-grid {
+			display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 25px; margin-bottom: 40px;
+		}
+
+		.user-card {
+			background: #ffffff; border-radius: 16px; padding: 30px 20px;
+			box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02); transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+			text-decoration: none; display: flex; flex-direction: column; align-items: center; cursor: pointer;
+			border: 1px solid transparent;
+		}
+		.user-card:hover {
+			transform: translateY(-5px); box-shadow: 0 12px 30px rgba(79, 70, 229, 0.08); border-color: rgba(99, 102, 241, 0.3);
+		}
+
+		.avatar-wrap {
+			width: 100px; height: 100px; border-radius: 50%; overflow: hidden;
+			margin-bottom: 15px; border: 4px solid #f8fafc; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+			background-color: #e2e8f0; display: flex; align-items: center; justify-content: center;
+		}
+		.avatar-wrap img { width: 100%; height: 100%; object-fit: cover; }
+		/* 如果没有头像，显示默认图标 */
+		.avatar-wrap i { font-size: 50px; color: #94a3b8; }
+
+		.user-name { font-size: 18px; color: #1e293b; font-weight: 600; margin-bottom: 8px; }
+		.user-role {
+			font-size: 13px; color: #4338ca; background: #e0e7ff; padding: 4px 12px; border-radius: 20px; font-weight: 500;
+		}
+
+		/* 分页器 */
+		.layui-laypage { display: block; text-align: center; }
+		.layui-laypage a, .layui-laypage span { border-radius: 8px !important; margin: 0 5px; border: none; background: #ffffff; box-shadow: 0 2px 10px rgba(0,0,0,0.02); color: #64748b; }
+		.layui-laypage .layui-laypage-curr .layui-laypage-em { background-color: #4f46e5; border-radius: 8px !important; }
+	</style>
+</head>
+<body>
+<div id="app" class="list-container">
+	<div class="page-title">系统用户 / 管理员</div>
+
+	<div class="search-bar">
+		<div>
+			<input type="text" name="username" id="username" autocomplete="off" class="layui-input" placeholder="输入用户名搜索">
+		</div>
+		<button class="search-btn" id="btn-search"><i class="layui-icon layui-icon-search"></i> 搜索</button>
+
+		<button v-if="isAuth('users','新增')" @click="jump('../users/add.html')" class="add-btn">
+			<i class="layui-icon layui-icon-add-1"></i> 添加用户
+		</button>
+	</div>
+
+	<div class="data-grid">
+		<a v-for="(item,index) in dataList" :key="index" @click="jump('../users/detail.html?id='+item.id)" class="user-card">
+			<div class="avatar-wrap">
+				<i class="layui-icon layui-icon-user"></i>
+			</div>
+			<div class="user-name">{{item.username || '未知用户'}}</div>
+			<div class="user-role">{{item.role || '管理员'}}</div>
+		</a>
+	</div>
+
+	<div v-if="dataList.length === 0" style="text-align: center; padding: 50px 0; color: #94a3b8; background: #fff; border-radius: 16px;">
+		<i class="layui-icon layui-icon-group" style="font-size: 40px; display: block; margin-bottom: 10px;"></i>
+		暂无用户数据
+	</div>
+
+	<div class="pager" id="pager" tabindex="0"></div>
+</div>
+
+<script src="../../layui/layui.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/config.js"></script>
+<script src="../../modules/config.js"></script>
+<script src="../../js/utils.js"></script>
+
+<script type="text/javascript">
+	var vue = new Vue({
+		el: '#app',
+		data: {
+			baseurl: '',
+			dataList: []
+		},
+		methods: {
+			isAuth(tablename, button) { return isFrontAuth(tablename, button); },
+			jump(url) { jump(url); }
+		}
+	});
+
+	layui.use(['layer', 'element', 'laypage', 'http', 'jquery'], function() {
+		var layer = layui.layer;
+		var laypage = layui.laypage;
+		var http = layui.http;
+		var jquery = layui.jquery;
+
+		vue.baseurl = http.baseurl;
+		var limit = 12;
+
+		function getDataList(page) {
+			var param = { page: page, limit: limit }
+			if (jquery('#username').val()) {
+				param['username'] = '%' + jquery('#username').val() + '%';
+			}
+
+			http.request('users/list', 'get', param, function(res) {
+				vue.dataList = res.data.list;
+				laypage.render({
+					elem: 'pager', count: res.data.total, limit: limit, curr: page,
+					groups: 5, layout: ['prev', 'page', 'next', 'skip'], theme: '#4f46e5',
+					jump: function(obj, first) {
+						if (!first) { getDataList(obj.curr); }
+					}
+				});
+			})
+		}
+
+		getDataList(1);
+		jquery('#btn-search').click(function(e) { getDataList(1); });
+	});
+</script>
+</body>
+</html>

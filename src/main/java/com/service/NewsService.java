@@ -12,7 +12,7 @@ import com.entity.view.NewsView;
 
 
 /**
- * 医院公告
+ * 社区公告
  *
  * @author 
  * @email 

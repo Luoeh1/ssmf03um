@@ -229,7 +229,13 @@ public class YonghuController {
     @RequestMapping("/update")
     public R update(@RequestBody YonghuEntity yonghu, HttpServletRequest request){
         //ValidatorUtils.validateEntity(yonghu);
-        yonghuService.updateById(yonghu);//全部更新
+        if(yonghu.getId() == null) {
+            return R.error("用户ID不能为空");
+        }
+        boolean updated = yonghuService.updateById(yonghu);//全部更新
+        if(!updated) {
+            return R.error("未找到需要更新的用户记录");
+        }
         return R.ok();
     }
     

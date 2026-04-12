@@ -1,201 +1,228 @@
 package com.entity.vo;
 
-import com.entity.YonghuEntity;
-
-import com.baomidou.mybatisplus.annotations.TableName;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import java.util.Date;
-import org.springframework.format.annotation.DateTimeFormat;
-
 import java.io.Serializable;
- 
 
 /**
  * 用户
- * 手机端接口返回实体辅助类 
- * （主要作用去除一些不必要的字段）
- * @author 
- * @email 
- * @date 2022-03-16 20:18:07
+ * 手机端接口返回实体辅助类
  */
-public class YonghuVO  implements Serializable {
+public class YonghuVO implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	 			
-	/**
-	 * 用户姓名
-	 */
-	
 	private String yonghuxingming;
-		
-	/**
-	 * 密码
-	 */
-	
 	private String mima;
-		
-	/**
-	 * 性别
-	 */
-	
 	private String xingbie;
-		
-	/**
-	 * 头像
-	 */
-	
 	private String touxiang;
-		
-	/**
-	 * 电话号码
-	 */
-	
 	private String dianhuahaoma;
-		
-	/**
-	 * 紧急联系人
-	 */
-	
 	private String jinjilianxiren;
-		
-	/**
-	 * 血型
-	 */
-	
 	private String xuexing;
-		
-	/**
-	 * 禁忌
-	 */
-	
 	private String jinji;
-				
-	
-	/**
-	 * 设置：用户姓名
-	 */
-	 
-	public void setYonghuxingming(String yonghuxingming) {
-		this.yonghuxingming = yonghuxingming;
-	}
-	
-	/**
-	 * 获取：用户姓名
-	 */
+	private String yinjiuqingkuang;
+	private String xiyanqingkuang;
+	private String yundongpinlv;
+	private String jingshenyali;
+	private String shuimianqingkuang;
+	private String shengao;
+	private String tizhong;
+	private String bmi;
+	private String xiongwei;
+	private String yaowei;
+	private String tunwei;
+	private String yuejingqingkuang;
+	private String jibingshi;
+	private String yaopinbaojianpinshiyongqingkuang;
+	private String yichuanbingshi;
+	private String guominshi;
+
 	public String getYonghuxingming() {
 		return yonghuxingming;
 	}
-				
-	
-	/**
-	 * 设置：密码
-	 */
-	 
-	public void setMima(String mima) {
-		this.mima = mima;
+
+	public void setYonghuxingming(String yonghuxingming) {
+		this.yonghuxingming = yonghuxingming;
 	}
-	
-	/**
-	 * 获取：密码
-	 */
+
 	public String getMima() {
 		return mima;
 	}
-				
-	
-	/**
-	 * 设置：性别
-	 */
-	 
-	public void setXingbie(String xingbie) {
-		this.xingbie = xingbie;
+
+	public void setMima(String mima) {
+		this.mima = mima;
 	}
-	
-	/**
-	 * 获取：性别
-	 */
+
 	public String getXingbie() {
 		return xingbie;
 	}
-				
-	
-	/**
-	 * 设置：头像
-	 */
-	 
-	public void setTouxiang(String touxiang) {
-		this.touxiang = touxiang;
+
+	public void setXingbie(String xingbie) {
+		this.xingbie = xingbie;
 	}
-	
-	/**
-	 * 获取：头像
-	 */
+
 	public String getTouxiang() {
 		return touxiang;
 	}
-				
-	
-	/**
-	 * 设置：电话号码
-	 */
-	 
-	public void setDianhuahaoma(String dianhuahaoma) {
-		this.dianhuahaoma = dianhuahaoma;
+
+	public void setTouxiang(String touxiang) {
+		this.touxiang = touxiang;
 	}
-	
-	/**
-	 * 获取：电话号码
-	 */
+
 	public String getDianhuahaoma() {
 		return dianhuahaoma;
 	}
-				
-	
-	/**
-	 * 设置：紧急联系人
-	 */
-	 
-	public void setJinjilianxiren(String jinjilianxiren) {
-		this.jinjilianxiren = jinjilianxiren;
+
+	public void setDianhuahaoma(String dianhuahaoma) {
+		this.dianhuahaoma = dianhuahaoma;
 	}
-	
-	/**
-	 * 获取：紧急联系人
-	 */
+
 	public String getJinjilianxiren() {
 		return jinjilianxiren;
 	}
-				
-	
-	/**
-	 * 设置：血型
-	 */
-	 
-	public void setXuexing(String xuexing) {
-		this.xuexing = xuexing;
+
+	public void setJinjilianxiren(String jinjilianxiren) {
+		this.jinjilianxiren = jinjilianxiren;
 	}
-	
-	/**
-	 * 获取：血型
-	 */
+
 	public String getXuexing() {
 		return xuexing;
 	}
-				
-	
-	/**
-	 * 设置：禁忌
-	 */
-	 
-	public void setJinji(String jinji) {
-		this.jinji = jinji;
+
+	public void setXuexing(String xuexing) {
+		this.xuexing = xuexing;
 	}
-	
-	/**
-	 * 获取：禁忌
-	 */
+
 	public String getJinji() {
 		return jinji;
 	}
-			
+
+	public void setJinji(String jinji) {
+		this.jinji = jinji;
+	}
+
+	public String getYinjiuqingkuang() {
+		return yinjiuqingkuang;
+	}
+
+	public void setYinjiuqingkuang(String yinjiuqingkuang) {
+		this.yinjiuqingkuang = yinjiuqingkuang;
+	}
+
+	public String getXiyanqingkuang() {
+		return xiyanqingkuang;
+	}
+
+	public void setXiyanqingkuang(String xiyanqingkuang) {
+		this.xiyanqingkuang = xiyanqingkuang;
+	}
+
+	public String getYundongpinlv() {
+		return yundongpinlv;
+	}
+
+	public void setYundongpinlv(String yundongpinlv) {
+		this.yundongpinlv = yundongpinlv;
+	}
+
+	public String getJingshenyali() {
+		return jingshenyali;
+	}
+
+	public void setJingshenyali(String jingshenyali) {
+		this.jingshenyali = jingshenyali;
+	}
+
+	public String getShuimianqingkuang() {
+		return shuimianqingkuang;
+	}
+
+	public void setShuimianqingkuang(String shuimianqingkuang) {
+		this.shuimianqingkuang = shuimianqingkuang;
+	}
+
+	public String getShengao() {
+		return shengao;
+	}
+
+	public void setShengao(String shengao) {
+		this.shengao = shengao;
+	}
+
+	public String getTizhong() {
+		return tizhong;
+	}
+
+	public void setTizhong(String tizhong) {
+		this.tizhong = tizhong;
+	}
+
+	public String getBmi() {
+		return bmi;
+	}
+
+	public void setBmi(String bmi) {
+		this.bmi = bmi;
+	}
+
+	public String getXiongwei() {
+		return xiongwei;
+	}
+
+	public void setXiongwei(String xiongwei) {
+		this.xiongwei = xiongwei;
+	}
+
+	public String getYaowei() {
+		return yaowei;
+	}
+
+	public void setYaowei(String yaowei) {
+		this.yaowei = yaowei;
+	}
+
+	public String getTunwei() {
+		return tunwei;
+	}
+
+	public void setTunwei(String tunwei) {
+		this.tunwei = tunwei;
+	}
+
+	public String getYuejingqingkuang() {
+		return yuejingqingkuang;
+	}
+
+	public void setYuejingqingkuang(String yuejingqingkuang) {
+		this.yuejingqingkuang = yuejingqingkuang;
+	}
+
+	public String getJibingshi() {
+		return jibingshi;
+	}
+
+	public void setJibingshi(String jibingshi) {
+		this.jibingshi = jibingshi;
+	}
+
+	public String getYaopinbaojianpinshiyongqingkuang() {
+		return yaopinbaojianpinshiyongqingkuang;
+	}
+
+	public void setYaopinbaojianpinshiyongqingkuang(String yaopinbaojianpinshiyongqingkuang) {
+		this.yaopinbaojianpinshiyongqingkuang = yaopinbaojianpinshiyongqingkuang;
+	}
+
+	public String getYichuanbingshi() {
+		return yichuanbingshi;
+	}
+
+	public void setYichuanbingshi(String yichuanbingshi) {
+		this.yichuanbingshi = yichuanbingshi;
+	}
+
+	public String getGuominshi() {
+		return guominshi;
+	}
+
+	public void setGuominshi(String guominshi) {
+		this.guominshi = guominshi;
+	}
 }

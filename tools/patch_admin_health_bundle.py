@@ -1,0 +1,58 @@
+from pathlib import Path
+
+
+bundle = Path("src/main/webapp/admin/dist/js/app.64d051d6.js")
+text = bundle.read_text(encoding="utf-8")
+
+old_state = (
+    'ro:{yonghuzhanghao:!1,yonghuxingming:!1,mima:!1,xingbie:!1,touxiang:!1,dianhuahaoma:!1,'
+    'jinjilianxiren:!1,xuexing:!1,jinji:!1},ruleForm:{yonghuzhanghao:"",yonghuxingming:"",mima:"",'
+    'xingbie:"",touxiang:"",dianhuahaoma:"",jinjilianxiren:"",xuexing:"",jinji:""},xingbieOptions:[],'
+)
+
+new_state = (
+    'ro:{yonghuzhanghao:!1,yonghuxingming:!1,mima:!1,xingbie:!1,touxiang:!1,dianhuahaoma:!1,'
+    'jinjilianxiren:!1,xuexing:!1,jinji:!1,yinjiuqingkuang:!1,xiyanqingkuang:!1,yundongpinlv:!1,'
+    'jingshenyali:!1,shuimianqingkuang:!1,shengao:!1,tizhong:!1,bmi:!1,xiongwei:!1,yaowei:!1,'
+    'tunwei:!1,yuejingqingkuang:!1,jibingshi:!1,yaopinbaojianpinshiyongqingkuang:!1,yichuanbingshi:!1,'
+    'guominshi:!1},ruleForm:{yonghuzhanghao:"",yonghuxingming:"",mima:"",xingbie:"",touxiang:"",'
+    'dianhuahaoma:"",jinjilianxiren:"",xuexing:"",jinji:"",yinjiuqingkuang:"",xiyanqingkuang:"",'
+    'yundongpinlv:"",jingshenyali:"",shuimianqingkuang:"",shengao:"",tizhong:"",bmi:"",xiongwei:"",'
+    'yaowei:"",tunwei:"",yuejingqingkuang:"",jibingshi:"",yaopinbaojianpinshiyongqingkuang:"",'
+    'yichuanbingshi:"",guominshi:""},xingbieOptions:[],'
+)
+
+old_init_tail = 'this.xingbieOptions="男,女".split(",")'
+new_init_tail = 'this.xingbieOptions="男,女".split(","),this.$nextTick((function(){n.renderHealthArchiveSection()}))'
+
+old_info = (
+    'info:function(t){var e=this;this.$http({url:"yonghu/info/".concat(t),method:"get"}).then((function(t){'
+    'var n=t.data;if(n&&0===n.code){e.ruleForm=n.data;new RegExp("../../../upload","g")}else e.$message.error(n.msg)}))}'
+)
+new_info = (
+    'info:function(t){var e=this;this.$http({url:"yonghu/info/".concat(t),method:"get"}).then((function(t){'
+    'var n=t.data;if(n&&0===n.code){e.ruleForm=Object.assign({},e.ruleForm,n.data),e.$nextTick((function(){'
+    'e.renderHealthArchiveSection()}));new RegExp("../../../upload","g")}else e.$message.error(n.msg)}))}'
+)
+
+old_submit = 'onSubmit:function(){var t=this;null!=this.ruleForm.touxiang&&'
+new_submit = 'onSubmit:function(){var t=this;this.syncHealthArchiveForm();null!=this.ruleForm.touxiang&&'
+
+old_methods = 'created:function(){this.addEditStyleChange(),this.addEditUploadStyleChange()},methods:{download:function(t){window.open("".concat(t))},init:function(t,e){'
+new_methods = """created:function(){this.addEditStyleChange(),this.addEditUploadStyleChange()},methods:{getHealthArchiveSections:function(){return[{title:"生活方式与体征",fields:[{key:"yinjiuqingkuang",label:"饮酒情况",type:"select",options:["从不饮酒","偶尔饮酒","每周饮酒","经常饮酒"]},{key:"xiyanqingkuang",label:"吸烟情况",type:"select",options:["从不吸烟","已戒烟","偶尔吸烟","经常吸烟"]},{key:"yundongpinlv",label:"运动频率",type:"select",options:["几乎不运动","每周1-2次","每周3-5次","几乎每天"]},{key:"jingshenyali",label:"精神压力",type:"select",options:["低","中","高"]},{key:"shuimianqingkuang",label:"睡眠情况",type:"select",options:["良好","一般","较差","长期失眠"]},{key:"shengao",label:"身高(cm)"},{key:"tizhong",label:"体重(kg)"},{key:"bmi",label:"BMI",readonly:!0},{key:"xiongwei",label:"胸围(cm)"},{key:"yaowei",label:"腰围(cm)"},{key:"tunwei",label:"臀围(cm)"},{key:"yuejingqingkuang",label:"月经情况",type:"textarea",full:!0,placeholder:"女性选填"}]},{title:"病史与用药",fields:[{key:"jibingshi",label:"疾病史",type:"textarea",full:!0,placeholder:"请填写既往疾病史、慢病史、手术史等"},{key:"yaopinbaojianpinshiyongqingkuang",label:"药品保健品使用情况",type:"textarea",full:!0,placeholder:"请填写药品、保健品及使用频率"},{key:"yichuanbingshi",label:"遗传病史",type:"textarea",placeholder:"如家族高血压、糖尿病等"},{key:"guominshi",label:"过敏史",type:"textarea",placeholder:"如药物过敏、食物过敏等"}]}]},htmlEscape:function(t){return null==t?"":String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")},injectHealthArchiveStyle:function(){if("undefined"!=typeof document&&!document.getElementById("healthArchiveExtraStyle")){var t=document.createElement("style");t.id="healthArchiveExtraStyle",t.innerHTML=".health-archive-extra{margin:20px 0;padding:22px;border:1px solid #e5e7eb;border-radius:16px;background:#f8fbff}.health-archive-extra__title{margin:0 0 18px;padding-left:12px;border-left:4px solid #0f766e;font-size:16px;font-weight:700;color:#0f172a}.health-archive-extra__grid{display:flex;flex-wrap:wrap;margin:0 -10px}.health-archive-extra__item{width:50%;padding:0 10px;box-sizing:border-box;margin-bottom:16px}.health-archive-extra__item.is-full{width:100%}.health-archive-extra__label{display:block;margin-bottom:8px;color:#475569;font-size:14px;font-weight:600}.health-archive-extra__input,.health-archive-extra__select,.health-archive-extra__textarea{width:100%;min-height:40px;padding:10px 12px;box-sizing:border-box;border:1px solid #dcdfe6;border-radius:6px;background:#fff;color:#606266;font-size:14px}.health-archive-extra__textarea{min-height:92px;resize:vertical}.health-archive-extra__input[readonly],.health-archive-extra__select[disabled],.health-archive-extra__textarea[readonly]{background:#f5f7fa;color:#606266}.health-archive-extra__hint{margin-top:6px;font-size:12px;color:#94a3b8}@media (max-width: 992px){.health-archive-extra__item,.health-archive-extra__item.is-full{width:100%}}",document.head.appendChild(t)}},renderHealthArchiveField:function(t){var e=this.ruleForm[t.key],n=this.type===\\"info\\"||t.readonly,o=\\"ha_\\"+t.key,a=t.full?\\"health-archive-extra__item is-full\\":\\"health-archive-extra__item\\",l='<div class=\"'+a+'\"><label class=\"health-archive-extra__label\">'+t.label+'</label>';if(\\"textarea\\"===t.type)l+='<textarea id=\"'+o+'\" data-field=\"'+t.key+'\" class=\"health-archive-extra__textarea\" '+(n?'readonly=\"readonly\"':\"\")+' placeholder=\"'+this.htmlEscape(t.placeholder||\"\")+'\">'+this.htmlEscape(e)+\"</textarea>\";else if(\\"select\\"===t.type){l+='<select id=\"'+o+'\" data-field=\"'+t.key+'\" class=\"health-archive-extra__select\" '+(n?'disabled=\"disabled\"':\"\")+\">\",l+='<option value=\"\">请选择</option>';for(var i=0;i<(t.options||[]).length;i++){var r=t.options[i],s=e===r?' selected=\"selected\"':\"\";l+='<option value=\"'+this.htmlEscape(r)+'\"'+s+\">'+this.htmlEscape(r)+\"</option>\"}l+=\"</select>\"}else l+='<input id=\"'+o+'\" data-field=\"'+t.key+'\" class=\"health-archive-extra__input\" type=\"text\" value=\"'+this.htmlEscape(e)+'\" '+(n?'readonly=\"readonly\"':\"\")+' placeholder=\"'+this.htmlEscape(t.placeholder||\"\")+'\">';return \\"bmi\\"===t.key&&(l+='<div class=\"health-archive-extra__hint\">根据身高和体重自动计算</div>'),l+=\"</div>\"},renderHealthArchiveSection:function(){if(\"undefined\"!=typeof document){this.injectHealthArchiveStyle();var t=document.querySelector(\".addEdit-block .el-form\");if(t){var e=t.querySelector(\".health-archive-extra-wrapper\");e&&e.parentNode.removeChild(e);for(var n=document.createElement(\"div\"),o=this.getHealthArchiveSections(),a=\"\",l=0;l<o.length;l++){for(var i=o[l],r='<div class=\"health-archive-extra\"><h3 class=\"health-archive-extra__title\">'+i.title+'</h3><div class=\"health-archive-extra__grid\">',s=0;s<i.fields.length;s++)r+=this.renderHealthArchiveField(i.fields[s]);a+=r+\"</div></div>\"}n.className=\"health-archive-extra-wrapper\",n.innerHTML=a;var u=t.querySelector(\".btn-wrap\");u&&u.parentNode?t.insertBefore(n,u.parentNode):t.appendChild(n),this.bindHealthArchiveEvents(),this.calcHealthArchiveBmi()}}},bindHealthArchiveEvents:function(){var t=this;if(\"undefined\"!=typeof document&&this.type!==\"info\"){var e=document.getElementById(\"ha_shengao\"),n=document.getElementById(\"ha_tizhong\");e&&e.addEventListener(\"input\",(function(){t.calcHealthArchiveBmi()})),n&&n.addEventListener(\"input\",(function(){t.calcHealthArchiveBmi()}))}},calcHealthArchiveBmi:function(){if(\"undefined\"!=typeof document){var t=document.getElementById(\"ha_shengao\"),e=document.getElementById(\"ha_tizhong\"),n=document.getElementById(\"ha_bmi\");if(t&&e&&n){var o=parseFloat(t.value),a=parseFloat(e.value);n.value=!o||!a||o<=0?\"\":(a/Math.pow(o/100,2)).toFixed(1)}}},syncHealthArchiveForm:function(){if(\"undefined\"!=typeof document)for(var t=this.getHealthArchiveSections(),e=0;e<t.length;e++)for(var n=t[e].fields,o=0;o<n.length;o++){var a=n[o],l=document.getElementById(\"ha_\"+a.key);l&&(this.ruleForm[a.key]=l.value||\"\")}this.calcHealthArchiveBmi();var i=document.getElementById(\"ha_bmi\");i&&(this.ruleForm.bmi=i.value||\"\")},download:function(t){window.open(\"\".concat(t))},init:function(t,e){"""
+
+replacements = [
+    (old_state, new_state),
+    (old_init_tail, new_init_tail),
+    (old_info, new_info),
+    (old_submit, new_submit),
+    (old_methods, new_methods),
+]
+
+for old, new in replacements:
+    if old not in text:
+        raise SystemExit(f"missing expected snippet: {old[:120]}")
+    text = text.replace(old, new, 1)
+
+bundle.write_text(text, encoding="utf-8")
+print("patched", bundle)

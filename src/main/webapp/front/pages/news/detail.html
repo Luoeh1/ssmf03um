@@ -4,6 +4,9 @@
 	<meta charset="utf-8">
 	<title>资讯详情阅读</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+	<meta http-equiv="Pragma" content="no-cache">
+	<meta http-equiv="Expires" content="0">
 	<link rel="stylesheet" href="../../layui/css/layui.css">
 	<style>
 		body, html {
@@ -14,7 +17,6 @@
 			min-height: 100vh;
 		}
 
-		/* 沉浸式阅读居中容器，宽度较窄适合人眼阅读 */
 		.article-container {
 			max-width: 900px;
 			margin: 40px auto;
@@ -22,7 +24,6 @@
 			box-sizing: border-box;
 		}
 
-		/* 面包屑导航 */
 		.breadcrumb {
 			margin-bottom: 25px;
 			font-size: 15px;
@@ -34,7 +35,6 @@
 		.breadcrumb a:hover { color: #008476; }
 		.breadcrumb span { margin: 0 10px; color: #cbd5e1; }
 
-		/* 文章主体纯白卡片 */
 		.article-card {
 			background: #ffffff;
 			border-radius: 20px;
@@ -42,7 +42,6 @@
 			box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
 		}
 
-		/* 文章头部（标题与元数据） */
 		.article-header {
 			margin-bottom: 35px;
 			text-align: center;
@@ -69,7 +68,6 @@
 			color: #cbd5e1;
 		}
 
-		/* 如果有封面大图，显示在这里 */
 		.article-cover {
 			width: 100%;
 			border-radius: 12px;
@@ -84,7 +82,6 @@
 			display: block;
 		}
 
-		/* 专业富文本排版样式 */
 		.rich-text-content {
 			font-size: 17px;
 			color: #334155;
@@ -95,7 +92,6 @@
 			margin-bottom: 20px;
 			text-align: justify;
 		}
-		/* 限制文章内图片大小，并且居中 */
 		.rich-text-content img {
 			max-width: 100%;
 			height: auto;
@@ -116,7 +112,6 @@
 			border-bottom-color: #008476;
 		}
 
-		/* 响应式兼容手机端 */
 		@media (max-width: 768px) {
 			.article-card { padding: 30px 20px; }
 			.article-title { font-size: 24px; }
@@ -125,31 +120,29 @@
 	</style>
 </head>
 <body>
-<div id="app" class="article-container">
 
+<div class="article-container">
 	<div class="breadcrumb">
-		<a href="javascript:window.history.back();"><i class="layui-icon layui-icon-left"></i> 返回资讯列表</a>
+		<a onclick="goBack()"><i class="layui-icon layui-icon-left"></i> 返回资讯列表</a>
 		<span>/</span>
 		正文阅读
 	</div>
 
 	<div class="article-card">
 		<div class="article-header">
-			<h1 class="article-title">{{detail.title}}</h1>
+			<h1 class="article-title" id="title"></h1>
 			<div class="article-meta">
-				<span v-if="detail.addtime"><i class="layui-icon layui-icon-time"></i>发布时间：{{detail.addtime}}</span>
-				<span v-if="detail.name"><i class="layui-icon layui-icon-username"></i>发布人：{{detail.name}}</span>
+				<span id="addtime"></span>
+				<span id="name"></span>
 			</div>
 		</div>
 
-		<div class="article-cover" v-if="detail.picture">
-			<img :src="detail.picture ? baseurl + detail.picture.split(',')[0] : ''" alt="封面图片">
+		<div class="article-cover" id="coverBox" style="display:none;">
+			<img id="coverImg" alt="封面图片">
 		</div>
 
-		<div class="rich-text-content" v-html="detail.content">
-		</div>
+		<div class="rich-text-content" id="content"></div>
 	</div>
-
 </div>
 
 <script src="../../layui/layui.js"></script>
@@ -159,43 +152,42 @@
 <script src="../../js/utils.js"></script>
 
 <script>
-	var vue = new Vue({
-		el: '#app',
-		data: {
-			detail: {}, // 存放文章详情
-			baseurl: ''
-		},
-		methods: {
-			jump(url) {
-				jump(url)
-			}
-		}
-	});
+	// ========== 强制页面一进来就瞬间置顶 ==========
+	history.scrollRestoration = "manual";
+	window.scrollTo(0, 0);
+	document.documentElement.scrollTop = 0;
+	document.body.scrollTop = 0;
 
-	layui.use(['layer', 'element', 'http', 'jquery'], function() {
-		var layer = layui.layer;
-		var element = layui.element;
+	function goBack() {
+		window.history.go(-1);
+	}
+
+	layui.use(['layer', 'http', 'jquery'], function() {
 		var http = layui.http;
-		var jquery = layui.jquery;
-
-		vue.baseurl = http.baseurl;
-
-		// 获取地址栏中的id
+		var $ = layui.jquery;
+		var baseurl = http.baseurl;
 		var id = http.getParam('id');
 
-		// 获取新闻详情
 		http.request('news/detail/' + id, 'get', {}, function(res) {
-			// 如果有封面字段，清洗一下路径
-			if(res.data.picture && res.data.picture.indexOf('http') == -1) {
-				res.data.picture = res.data.picture.replace(http.baseurl,"");
+			var data = res.data;
+			$("#title").text(data.title);
+			$("#addtime").html('<i class="layui-icon layui-icon-time"></i>发布时间：' + (data.addtime || ''));
+			$("#name").html('<i class="layui-icon layui-icon-username"></i>发布人：' + (data.name || ''));
+
+			if (data.picture) {
+				$("#coverBox").show();
+				$("#coverImg").attr("src", baseurl + data.picture.split(',')[0]);
 			}
 
-			// 【核心逻辑】：处理富文本编辑器中上传的图片路径，补全后台接口地址
-			if(res.data.content) {
-				res.data.content = res.data.content.replace(/src="upload\//g, 'src="' + vue.baseurl + 'upload/');
+			if (data.content) {
+				data.content = data.content.replace(/src="upload\//g, 'src="' + baseurl + 'upload/');
+				$("#content").html(data.content);
 			}
 
-			vue.detail = res.data;
+			// 最终强制置顶（延迟确保图片加载完也不会跑）
+			setTimeout(function(){
+				window.scrollTo(0,0);
+			}, 80);
 		});
 	});
 </script>

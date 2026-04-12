@@ -1,0 +1,214 @@
+/* =========================================================================
+   医疗科技风：后台全局 UI 深度美化 (取代繁琐的单个 vue 文件修改)
+   保证：功能 100% 零损耗，按钮零丢失，所有模块一键蜕变！
+   ========================================================================= */
+
+/* 1. 主页面背景色与边距 */
+.main-content {
+    background-color: #f5f8fa !important;
+    padding: 25px !important;
+    min-height: calc(100vh - 70px) !important;
+}
+
+/* 2. 列表页：顶部搜索区卡片化 */
+.form-content {
+    background: #ffffff !important;
+    border-radius: 16px !important;
+    padding: 25px 30px 10px 30px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03) !important;
+    margin-bottom: 25px !important;
+    border-top: 5px solid #008476 !important; /* 医疗青绿顶边 */
+}
+
+/* 去除系统生成的原生丑陋背景色 */
+.form-content .slt,
+.form-content .ad {
+    background: transparent !important;
+    border: none !important;
+}
+
+/* 3. 列表页：表格主体区卡片化 */
+.table-content {
+    background: #ffffff !important;
+    border-radius: 16px !important;
+    padding: 30px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03) !important;
+}
+
+/* 表格本表美化 */
+.tables {
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.01) !important;
+    width: 100% !important;
+}
+
+/* 表头美化 */
+.tables th {
+    background-color: #f8fafc !important;
+    color: #1e293b !important;
+    font-weight: 600 !important;
+    font-size: 15px !important;
+    border-bottom: 2px solid #e2e8f0 !important;
+    padding: 15px 0 !important;
+}
+
+/* 表格行悬浮高亮 */
+.tables .el-table__row:hover > td {
+    background-color: #f0f7ff !important; /* 悬浮浅蓝色（推荐） */
+}
+
+/* 单元格美化 */
+.tables td {
+    border-bottom: 1px dashed #e2e8f0 !important;
+    color: #475569 !important;
+    font-size: 14px !important;
+    padding: 12px 0 !important;
+    background-color: #ffffff !important;
+}
+
+/* 4. 分页器美化与居中 */
+.pagination-content {
+    margin-top: 30px !important;
+    padding-bottom: 10px !important;
+    display: flex !important;
+    justify-content: center !important; /* 强制水平居中 */
+    align-items: center !important;
+    width: 100% !important;
+}
+.pagination-content .el-pager li {
+    border-radius: 8px !important;
+    margin: 0 4px !important;
+    font-weight: bold !important;
+    transition: all 0.3s !important;
+    background: #f8fafc !important;
+}
+.pagination-content .el-pager li.active {
+    background-color: #008476 !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 10px rgba(0, 132, 118, 0.3) !important;
+}
+.pagination-content .el-pager li:hover:not(.active) {
+    color: #008476 !important;
+}
+
+/* 5. 按钮统一圆角与质感（彻底覆盖系统自带颜色的内联样式） */
+.el-button {
+    border-radius: 8px !important;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+}
+
+/* 主要/新增按钮 */
+.el-button--primary {
+    background: linear-gradient(135deg, #00b4db 0%, #008476 100%) !important;
+    border: none !important;
+    color: #fff !important;
+    box-shadow: 0 4px 12px rgba(0, 132, 118, 0.2) !important;
+}
+.el-button--primary:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 15px rgba(0, 132, 118, 0.3) !important;
+}
+
+/* 危险/删除按钮 */
+.el-button--danger {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+    border: none !important;
+    color: #fff !important;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2) !important;
+}
+.el-button--danger:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 15px rgba(239, 68, 68, 0.3) !important;
+}
+
+/* 成功/详情/导出按钮 */
+.el-button--success {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important; /* 采用科技蓝区分 */
+    border: none !important;
+    color: #fff !important;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2) !important;
+}
+.el-button--success:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 15px rgba(59, 130, 246, 0.3) !important;
+}
+
+/* 其他辅助按钮防呆补充 */
+.el-button--warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+    border: none !important; color: #fff !important; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2) !important;
+}
+.el-button--info {
+    background: linear-gradient(135deg, #64748b 0%, #475569 100%) !important;
+    border: none !important; color: #fff !important; box-shadow: 0 4px 12px rgba(100, 116, 139, 0.2) !important;
+}
+
+/* 6. 输入框/下拉框/日期框 统一发光圆角 */
+.el-input__inner, .el-textarea__inner {
+    border-radius: 8px !important;
+    border: 1px solid #cbd5e1 !important;
+    background-color: #f8fafc !important;
+    color: #334155 !important;
+    transition: all 0.3s !important;
+    box-shadow: none !important;
+}
+.el-input__inner:focus, .el-textarea__inner:focus {
+    background-color: #ffffff !important;
+    border-color: #008476 !important;
+    box-shadow: 0 0 0 3px rgba(0, 132, 118, 0.15) !important;
+}
+
+/* =========================================================================
+   7. 添加/编辑 (add-or-update.vue) 详情表单专用美化
+   ========================================================================= */
+.addEdit-block {
+    background: #ffffff !important;
+    border-radius: 20px !important;
+    padding: 40px 50px !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04) !important;
+    margin-top: 15px !important;
+    position: relative !important;
+    border-top: 6px solid #008476 !important;
+}
+
+/* 表单内容最大宽度及居中 */
+.detail-form-content {
+    max-width: 1100px !important;
+    margin: 0 auto !important;
+}
+
+/* 表单 Label 字体 */
+.detail-form-content .el-form-item__label {
+    font-weight: 600 !important;
+    color: #475569 !important;
+    font-size: 15px !important;
+}
+
+/* 图片上传组件美化 */
+.avatar-uploader .el-upload {
+    border: 2px dashed #cbd5e1 !important;
+    border-radius: 12px !important;
+    background-color: #f8fafc !important;
+    transition: all 0.3s !important;
+    width: 120px !important;
+    height: 120px !important;
+    line-height: 120px !important;
+}
+.avatar-uploader .el-upload:hover {
+    border-color: #008476 !important;
+    background-color: #f0fdfa !important;
+    transform: translateY(-2px) !important;
+}
+.avatar-uploader-icon {
+    font-size: 28px !important;
+    color: #94a3b8 !important;
+}
+
+/* 修复富文本编辑器边框 */
+.ql-container, .editor {
+    border-radius: 8px !important;
+    border: 1px solid #cbd5e1 !important;
+    overflow: hidden !important;
+}

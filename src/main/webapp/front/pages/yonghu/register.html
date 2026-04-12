@@ -103,7 +103,7 @@
 		<div class="layui-form-item">
 			<label class="layui-form-label">账号</label>
 			<div class="layui-input-block">
-				<input type="text" name="zhanghao" required lay-verify="required" placeholder="请输入系统账号(必填)" autocomplete="off" class="layui-input">
+				<input type="text" name="yonghuzhanghao" required lay-verify="required" placeholder="请输入系统账号(必填)" autocomplete="off" class="layui-input">
 			</div>
 		</div>
 		<div class="layui-form-item">
@@ -115,7 +115,7 @@
 		<div class="layui-form-item">
 			<label class="layui-form-label">姓名</label>
 			<div class="layui-input-block">
-				<input type="text" name="xingming" required lay-verify="required" placeholder="请输入真实姓名(必填)" autocomplete="off" class="layui-input">
+				<input type="text" name="yonghuxingming" required lay-verify="required" placeholder="请输入真实姓名(必填)" autocomplete="off" class="layui-input">
 			</div>
 		</div>
 		<div class="layui-form-item">
@@ -167,9 +167,9 @@
 		// 提交注册表单
 		form.on('submit(register)', function(data) {
 			data = data.field;
-			if(!data.zhanghao){ layer.msg('账号不能为空', {time: 2000,icon: 5}); return false; }
+			if(!data.yonghuzhanghao){ layer.msg('账号不能为空', {time: 2000,icon: 5}); return false; }
 			if(!data.mima){ layer.msg('密码不能为空', {time: 2000,icon: 5}); return false; }
-			if(!data.xingming){ layer.msg('姓名不能为空', {time: 2000,icon: 5}); return false; }
+			if(!data.yonghuxingming){ layer.msg('姓名不能为空', {time: 2000,icon: 5}); return false; }
 			if(data.nianling && !isIntNumer(data.nianling)){ layer.msg('年龄应输入整数', {time: 2000,icon: 5}); return false; }
 			if(data.shouji && !isMobile(data.shouji)){ layer.msg('手机应输入手机格式', {time: 2000,icon: 5}); return false; }
 			if(data.shenfenzheng && !isIdentity(data.shenfenzheng)){ layer.msg('身份证应输入身份证格式', {time: 2000,icon: 5}); return false; }

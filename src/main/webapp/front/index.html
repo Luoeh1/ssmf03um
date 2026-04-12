@@ -11,21 +11,23 @@
 		html, body {
 			height: 100%;
 			margin: 0;
-			background-color: #f5f8fa; /* 极简的浅灰背景 */
+			padding:0;
+			background-color: #f5f8fa;
 			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
 			scroll-behavior: smooth;
 		}
 
+		/* 核心修复：iframe固定高度，开启内部滚动，能看到所有内容 */
 		#iframe {
 			width: 100%;
-			margin-top: 80px; /* 留出导航栏高度 */
+			margin-top: 80px;
 			padding: 0;
 			display: block;
-			min-height: calc(100vh - 80px - 120px);
+			/* 固定高度，内部滚动 */
+			height: calc(100vh - 80px);
 			border: none;
 		}
 
-		/* 顶部导航栏 - 毛玻璃与居中对齐设计 */
 		#header {
 			position: fixed;
 			top: 0;
@@ -33,7 +35,6 @@
 			width: 100%;
 			height: 80px;
 			z-index: 1000;
-			/* 毛玻璃核心代码 */
 			background: rgba(255, 255, 255, 0.75) !important;
 			backdrop-filter: blur(16px);
 			-webkit-backdrop-filter: blur(16px);
@@ -41,7 +42,6 @@
 			box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03) !important;
 		}
 
-		/* PC端内容居中容器 */
 		.nav-container {
 			max-width: 1400px;
 			height: 100%;
@@ -52,7 +52,6 @@
 			padding: 0 40px;
 		}
 
-		/* Logo 与 标题 */
 		.nav-logo {
 			display: flex;
 			align-items: center;
@@ -76,7 +75,6 @@
 			letter-spacing: 1px;
 		}
 
-		/* 导航菜单区 */
 		.nav-menu ul {
 			display: flex;
 			margin: 0;
@@ -98,11 +96,9 @@
 			font-weight: 500;
 			text-decoration: none;
 			border-radius: 12px;
-			/* 高级悬停动画 */
 			transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 		}
 
-		/* 鼠标悬停及选中状态 - 微发光与轻微上浮 */
 		.nav-menu ul li:hover a,
 		.nav-menu ul li.current a {
 			color: #008476;
@@ -110,26 +106,13 @@
 			transform: translateY(-2px);
 		}
 
-		/* 页脚区 - 清新极简风 */
 		#tabbar {
-			background: #ffffff !important;
-			color: #7f8c8d !important;
-			padding: 40px 0 !important;
-			text-align: center;
-			border-top: 1px solid #e1e8ed !important;
-			box-shadow: none !important;
-		}
-
-		#tabbar div {
-			margin: 8px 0 !important;
-			font-size: 14px !important;
-			color: #95a5a6 !important;
-			background: transparent !important;
-			border: none !important;
+			display: none; /* 隐藏页脚，不影响内容查看 */
 		}
 	</style>
 </head>
 <body>
+
 <div id="header">
 	<div class="nav-container">
 		<a class="nav-logo" href="javascript:navPage('./pages/home/home.html')">
@@ -144,17 +127,16 @@
 					<a :href="'javascript:navPage(\''+item.url+'\')'">{{item.name}}</a>
 				</li>
 				<li><a href="javascript:centerPage();">个人中心</a></li>
-				<li><a :href="adminurl" target="_blank">后台管理</a></li>
+				<li v-if="Token"><a href="javascript:void(0);" @click="logout()">退出登录</a></li>
+				<li v-else><a href="./pages/login/login.html">.html">登录系统</a></li>
+				<li><a href="javascript:void(0);" @click="goAdmin()">后台管理</a></li>
 			</ul>
 		</div>
 	</div>
 </div>
-<iframe src="./pages/home/home.html" id="iframe" frameborder="0" scrolling="no" onload="changeFrameHeight()"></iframe>
 
-<div id="tabbar">
-	<div>版权所有 © 社区诊疗与健康档案管理系统 2026</div>
-	<div>科技赋能医疗 · 为您的健康保驾护航</div>
-</div>
+<!-- 核心修复：开启iframe滚动 -->
+<iframe src="./pages/home/home.html" id="iframe" frameborder="0" scrolling="auto"></iframe>
 
 <script src="./xznstatic/js/jquery-1.11.3.min.js"></script>
 <script src="./layui/layui.js"></script>
@@ -162,8 +144,6 @@
 <script src="./js/config.js"></script>
 
 <script>
-	var vue1 = new Vue({el: '#tabbar'})
-
 	var vue = new Vue({
 		el: '#header',
 		data: {
@@ -172,6 +152,7 @@
 			adminurl: adminurl,
 			chatFlag: chatFlag,
 			projectName: projectName,
+			Token: localStorage.getItem('Token')
 		},
 		mounted: function() {
 			this.bindClickOnLi();
@@ -184,16 +165,28 @@
 						$(this).addClass("current").siblings().removeClass("current");
 					}
 				});
+			},
+			goAdmin() {
+				var role = localStorage.getItem('role');
+				if (role === '用户') {
+					layui.layer.msg('普通用户无权访问后台管理系统！', { icon: 5, time: 2000 });
+					return;
+				}
+				window.open(this.adminurl, '_blank');
+			},
+			logout() {
+				localStorage.clear();
+				layui.layer.msg('退出成功', { time: 1000, icon: 6 }, function() {
+					window.location.reload();
+				});
 			}
 		}
 	});
 
-	layui.use(['element','layer'], function() {
-		var element = layui.element;
-		var layer = layui.layer;
-	});
-
+	// 🔥 点击跳转 + 自动置顶（保留功能）
 	function navPage(url) {
+		// 切换页面时回到顶部
+		document.getElementById('iframe').contentWindow.scrollTo(0,0);
 		localStorage.setItem('iframeUrl', url);
 		document.getElementById('iframe').src = url;
 	}
@@ -203,31 +196,15 @@
 		if (userTable) {
 			localStorage.setItem('iframeUrl', './pages/' + userTable + '/center.html');
 			document.getElementById('iframe').src = './pages/' + userTable + '/center.html';
+			document.getElementById('iframe').contentWindow.scrollTo(0,0);
 		} else {
 			window.location.href = './pages/login/login.html'
 		}
 	}
 
-	var iframeUrl = localStorage.getItem('iframeUrl');
-	document.getElementById('iframe').src = iframeUrl  || './pages/home/home.html';
-
-	setInterval(function(){
-		changeFrameHeight();
-	}, 200);
-
-	function changeFrameHeight() {
-		var iframe = document.getElementById('iframe');
-		if (iframe) {
-			var iframeWin = iframe.contentWindow || iframe.contentDocument.parentWindow;
-			if (iframeWin.document.body) {
-				iframe.height = iframeWin.document.body.scrollHeight;
-			}
-		}
-	};
-
-	window.onresize = function() {
-		changeFrameHeight();
-	}
+	// 🔥 强制启动进入首页，永不随机
+	localStorage.removeItem('iframeUrl');
+	document.getElementById('iframe').src = './pages/home/home.html';
 </script>
 </body>
 </html>

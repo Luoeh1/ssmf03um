@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<title>添加/编辑配置</title>
+	<link rel="stylesheet" href="../../layui/css/layui.css">
+	<style>
+		body, html {
+			margin: 0; padding: 0; background-color: #f8fafc;
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+			min-height: 100vh;
+		}
+
+		.add-container {
+			max-width: 650px; margin: 50px auto; background: #ffffff; border-radius: 20px;
+			box-shadow: 0 10px 40px rgba(0, 0, 0, 0.03); padding: 40px 50px; box-sizing: border-box;
+		}
+
+		.page-title {
+			font-size: 24px; color: #0f172a; font-weight: 600; margin-bottom: 30px; text-align: center;
+			letter-spacing: 1px; position: relative; padding-bottom: 15px;
+		}
+		.page-title::after {
+			content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+			width: 40px; height: 4px; background: linear-gradient(90deg, #6366f1, #4338ca); border-radius: 2px;
+		}
+
+		.layui-form-item { margin-bottom: 25px; }
+		.layui-form-label { width: 100px; padding: 12px 15px 12px 0; font-size: 15px; color: #475569; font-weight: 500; }
+		.layui-input-block { margin-left: 115px; }
+
+		.layui-input {
+			border-radius: 10px !important; border: 1px solid #e2e8f0; background-color: #f8fafc; color: #334155;
+			padding-left: 15px; height: 48px; transition: all 0.3s;
+		}
+		.layui-input:focus { background-color: #ffffff; border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1); }
+
+		.layui-input[readonly], .layui-input[disabled] {
+			background-color: #eef2f5 !important; color: #94a3b8; cursor: not-allowed; border-color: #e2e8f0 !important;
+		}
+
+		/* 附件上传区域 */
+		.upload-area {
+			border: 2px dashed #cbd5e1; border-radius: 12px; padding: 20px; text-align: center;
+			background: #f8fafc; transition: all 0.3s; display: inline-block; min-width: 250px;
+		}
+		.upload-area:hover { border-color: #4f46e5; background: #eef2ff; }
+		.upload-preview { max-width: 100%; max-height: 160px; border-radius: 8px; margin-top: 15px; display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.05); object-fit: cover;}
+		.btn-upload-pic { background: #ffffff; border: 1px solid #4f46e5; color: #4f46e5; padding: 0 25px; height: 40px; border-radius: 8px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 5px; margin: 0 auto;}
+		.btn-upload-pic:hover { background: rgba(79, 70, 229, 0.05); transform: translateY(-2px); }
+
+		.btn-container { text-align: center; margin-top: 40px; }
+		.btn-submit {
+			background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%); color: white; border: none; padding: 0 45px;
+			height: 48px; border-radius: 10px; font-size: 16px; font-weight: 600; letter-spacing: 2px; cursor: pointer;
+			box-shadow: 0 6px 15px rgba(79, 70, 229, 0.3); transition: all 0.3s; display: inline-block;
+		}
+		.btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(79, 70, 229, 0.4); }
+		.btn-back {
+			background: #ffffff; color: #64748b; border: 1px solid #cbd5e1; padding: 0 35px; height: 48px;
+			border-radius: 10px; font-size: 16px; cursor: pointer; transition: all 0.3s; margin-left: 20px; display: inline-block;
+		}
+		.btn-back:hover { color: #1e293b; border-color: #94a3b8; background: #f8fafc; }
+
+		@media (max-width: 768px) {
+			.add-container { margin: 20px; padding: 30px 20px; }
+			.layui-form-label { display: block; text-align: left; width: 100%; padding-bottom: 5px; }
+			.layui-input-block { margin-left: 0; }
+			.btn-back { margin-left: 0; margin-top: 15px; display: block; width: 100%; }
+			.btn-submit { display: block; width: 100%; }
+		}
+	</style>
+</head>
+<body>
+
+<div id="app">
+	<div class="add-container">
+		<div class="page-title">系统参数 / 轮播图设置</div>
+		<form class="layui-form layui-form-pane" lay-filter="myForm">
+
+			<div class="layui-form-item" pane>
+				<label class="layui-form-label">配置名称：</label>
+				<div class="layui-input-block">
+					<input v-model="detail.name" type="text" :readonly="ro.name" name="name" id="name" autocomplete="off" class="layui-input" placeholder="输入配置项名称(如:picture1)" lay-verify="required">
+				</div>
+			</div>
+
+			<div class="layui-form-item" pane>
+				<label class="layui-form-label">配置值(文本)：</label>
+				<div class="layui-input-block">
+					<input v-model="detail.value" type="text" :readonly="ro.value" name="value" id="value" autocomplete="off" class="layui-input" placeholder="如果是非图片配置，在此填入值">
+				</div>
+			</div>
+
+			<div class="layui-form-item" pane>
+				<label class="layui-form-label">上传配置图：</label>
+				<div class="layui-input-block">
+					<div class="upload-area">
+						<button type="button" class="btn-upload-pic" id="valueUpload">
+							<i class="layui-icon layui-icon-upload-drag"></i> 上传图片(若需要)
+						</button>
+						<div>
+							<img id="valueImg" class="upload-preview" src="">
+						</div>
+					</div>
+					<div style="font-size: 12px; color: #94a3b8; margin-top: 8px;">* 注：上传图片后，上方"配置值"输入框会自动填入图片路径，保存即可生效。</div>
+				</div>
+			</div>
+
+			<div class="btn-container">
+				<button class="btn-submit" lay-submit lay-filter="*">保存配置项</button>
+				<button type="button" class="btn-back" @click="back()">取消并返回</button>
+			</div>
+		</form>
+	</div>
+</div>
+
+<script src="../../layui/layui.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/config.js"></script>
+<script src="../../modules/config.js"></script>
+<script src="../../js/utils.js"></script>
+<script src="../../js/validate.js"></script>
+
+<script>
+	var vue = new Vue({
+		el: '#app',
+		data: {
+			detail: {
+				name: '',
+				value: ''
+			},
+			ro:{
+				name : false,
+				value : false
+			},
+			baseurl: ''
+		},
+		methods: {
+			jump(url) { jump(url) },
+			back() { window.history.back(); }
+		}
+	})
+
+	layui.use(['layer', 'element', 'http', 'jquery', 'form', 'upload'], function() {
+		var layer = layui.layer;
+		var element = layui.element;
+		var http = layui.http;
+		var jquery = layui.jquery;
+		var form = layui.form;
+		var upload = layui.upload;
+		vue.baseurl = http.baseurl;
+
+		// 图片上传组件绑定到 value 字段
+		var valueUpload = upload.render({
+			elem: '#valueUpload',
+			url: http.baseurl + 'file/upload',
+			headers: { 'Token': localStorage.getItem('Token') },
+			accept: 'images',
+			before: function() { layer.load(1); },
+			done: function(res) {
+				layer.closeAll('loading');
+				if (res.code == 0) {
+					layer.msg("上传成功", { time: 2000, icon: 6 });
+					var url = 'upload/' + res.file;
+					vue.detail.value = url;
+					jquery('#value').val(url); // 同步到输入框
+					jquery('#valueImg').attr('src', http.baseurl + url).css('display', 'inline-block');
+				} else {
+					layer.msg(res.msg, { time: 2000, icon: 5 });
+				}
+			},
+			error: function() { layer.closeAll('loading'); layer.msg("请求接口异常", { time: 2000, icon: 5 }); }
+		});
+
+		// 跨表传参
+		if(localStorage.getItem('crossTable')) {
+			var crossTable = localStorage.getItem('crossTable');
+			var crossObj = JSON.parse(localStorage.getItem('crossObj'));
+			for (var o in crossObj){
+				if(o=='name'){ vue.detail[o] = crossObj[o]; vue.ro.name = true; continue; }
+				if(o=='value'){ vue.detail[o] = crossObj[o]; vue.ro.value = true; continue; }
+			}
+		}
+
+		// 修改时的回显
+		var id = http.getParam('id');
+		if (id) {
+			http.request('config/info/' + id, 'get', {}, function(res) {
+				vue.detail = res.data;
+				// 如果是图片，回显预览图
+				if(vue.detail.value && vue.detail.value.indexOf('upload/') != -1) {
+					jquery('#valueImg').attr('src', http.baseurl + vue.detail.value.replace(http.baseurl, "")).css('display', 'inline-block');
+				}
+			});
+		}
+
+		// 提交表单保存
+		form.on('submit(*)', function(data) {
+			data = data.field;
+
+			// 同步Vue中的值(防止用户只点上传没触发input的change)
+			data.value = vue.detail.value;
+
+			let url = id ? 'config/update' : 'config/add';
+			if(id){ data.id = id; }
+
+			http.requestJson(url, 'post', data, function(res) {
+				layer.msg('配置保存成功', { time: 2000, icon: 6 }, function() { back(); });
+			});
+			return false;
+		});
+
+	});
+</script>
+</body>
+</html>

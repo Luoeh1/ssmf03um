@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>检查报告详情</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="../../layui/css/layui.css">
+	<style>
+		body, html {
+			margin: 0;
+			padding: 0;
+			background-color: #eef2f5;
+			font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
+			min-height: 100vh;
+		}
+
+		/* A4 化验单模拟容器 */
+		.paper-container {
+			max-width: 850px;
+			margin: 40px auto 60px;
+			background: #ffffff;
+			box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+			padding: 50px 60px;
+			box-sizing: border-box;
+			border-top: 10px solid #3b82f6; /* 科技蓝边 */
+			position: relative;
+		}
+
+		.hospital-header {
+			text-align: center;
+			margin-bottom: 40px;
+			border-bottom: 2px solid #1e293b;
+			padding-bottom: 20px;
+		}
+		.hospital-name {
+			font-size: 26px;
+			color: #3b82f6;
+			font-weight: bold;
+			letter-spacing: 4px;
+			margin-bottom: 10px;
+		}
+		.doc-type {
+			font-size: 20px;
+			color: #1e293b;
+			letter-spacing: 10px;
+			margin-left: 10px;
+		}
+
+		.info-grid {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			row-gap: 15px;
+			column-gap: 40px;
+			margin-bottom: 30px;
+			font-size: 15px;
+			color: #334155;
+		}
+		.info-item {
+			display: flex;
+			border-bottom: 1px dashed #e2e8f0;
+			padding-bottom: 8px;
+		}
+		.info-item .label { color: #64748b; width: 80px; flex-shrink: 0; }
+		.info-item .val { font-weight: 500; color: #0f172a; }
+
+		.content-block {
+			margin-top: 30px;
+			background: #f8fafc;
+			border: 1px solid #e2e8f0;
+			border-radius: 8px;
+			padding: 20px;
+		}
+		.block-title {
+			font-size: 16px;
+			color: #3b82f6;
+			font-weight: bold;
+			margin-bottom: 15px;
+			display: flex;
+			align-items: center;
+		}
+		.block-title::before {
+			content: '';
+			display: block;
+			width: 4px;
+			height: 16px;
+			background: #3b82f6;
+			margin-right: 8px;
+			border-radius: 2px;
+		}
+		.block-text {
+			font-size: 15px;
+			line-height: 1.8;
+			color: #334155;
+			white-space: pre-wrap;
+		}
+
+		/* 医师签名区 */
+		.signature-area {
+			margin-top: 60px;
+			display: flex;
+			justify-content: flex-end;
+			gap: 50px;
+			font-size: 16px;
+			color: #1e293b;
+		}
+		.sign-box { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+		.sign-line {
+			border-bottom: 1px solid #1e293b;
+			width: 120px;
+			text-align: center;
+			padding-bottom: 5px;
+			font-family: "Kaiti", "STKaiti", serif;
+			font-size: 20px;
+			color: #000;
+		}
+
+		.back-btn-float {
+			position: fixed; left: 40px; top: 40px; background: #ffffff; border: 1px solid #e2e8f0; padding: 10px 20px;
+			border-radius: 30px; color: #475569; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+			transition: all 0.3s; text-decoration: none; display: flex; align-items: center; gap: 5px; z-index: 100;
+		}
+		.back-btn-float:hover { color: #3b82f6; box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+
+		@media (max-width: 768px) {
+			.paper-container { margin: 15px; padding: 30px 20px; }
+			.info-grid { grid-template-columns: 1fr; }
+			.back-btn-float { position: static; display: inline-block; margin: 15px 0 0 15px; }
+			.signature-area { flex-direction: column; align-items: flex-end; gap: 20px; }
+		}
+	</style>
+</head>
+<body>
+<div id="app">
+	<a href="javascript:window.history.back();" class="back-btn-float">
+		<i class="layui-icon layui-icon-left"></i> 返回列表
+	</a>
+
+	<div class="paper-container">
+		<div class="hospital-header">
+			<div class="hospital-name">临床检验医学中心</div>
+			<div class="doc-type">医学检查报告单</div>
+		</div>
+
+		<div class="info-grid">
+			<div class="info-item" v-if="detail.baogaobianhao">
+				<span class="label">报告编号:</span>
+				<span class="val">{{detail.baogaobianhao}}</span>
+			</div>
+			<div class="info-item" v-if="detail.zhenduanshijian">
+				<span class="label">诊断时间:</span>
+				<span class="val">{{detail.zhenduanshijian}}</span>
+			</div>
+			<div class="info-item" v-if="detail.yonghuxingming">
+				<span class="label">患者姓名:</span>
+				<span class="val">{{detail.yonghuxingming}}</span>
+			</div>
+			<div class="info-item" v-if="detail.xiangmumingcheng">
+				<span class="label">项目名称:</span>
+				<span class="val">{{detail.xiangmumingcheng}}</span>
+			</div>
+			<div class="info-item" v-if="detail.xiangmufenlei">
+				<span class="label">项目分类:</span>
+				<span class="val">{{detail.xiangmufenlei}}</span>
+			</div>
+		</div>
+
+		<div class="content-block" v-if="detail.zhenduanjieguo" style="background: transparent; border: none; padding:0;">
+			<div class="block-title">诊断结果及临床意义</div>
+			<div class="block-text" v-html="detail.zhenduanjieguo"></div>
+		</div>
+
+		<div class="signature-area">
+			<div class="sign-box">
+				<span>报告审核医师：</span>
+				<div class="sign-line">{{detail.yishengxingming || '系统自动生成'}}</div>
+			</div>
+		</div>
+
+	</div>
+</div>
+
+<script src="../../layui/layui.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/config.js"></script>
+<script src="../../modules/config.js"></script>
+<script src="../../js/utils.js"></script>
+
+<script>
+	var vue = new Vue({
+		el: '#app',
+		data: {
+			detail: { id: 0 },
+			baseurl: ''
+		},
+		methods: {
+			jump(url) { jump(url) },
+			isAuth(tablename, button) { return isFrontAuth(tablename, button) }
+		}
+	});
+
+	layui.use(['layer', 'http', 'jquery'], function() {
+		var layer = layui.layer;
+		var http = layui.http;
+		var jquery = layui.jquery;
+
+		var id = http.getParam('id');
+		vue.baseurl = http.baseurl;
+
+		http.request(`jianchabaogao/detail/` + id, 'get', {}, function(res) {
+			// 处理富文本图片路径问题，字段名修正为 zhenduanjieguo
+			if(res.data.zhenduanjieguo) {
+				res.data.zhenduanjieguo = res.data.zhenduanjieguo.replace(/src="upload\//g, 'src="' + vue.baseurl + 'upload/');
+			}
+			vue.detail = res.data;
+		});
+	});
+</script>
+</body>
+</html>
