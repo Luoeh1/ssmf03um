@@ -23,6 +23,7 @@ import center from '@/views/center'
     import yaopinfenlei from '@/views/modules/yaopinfenlei/list'
     import xiangmuxinxi from '@/views/modules/xiangmuxinxi/list'
     import dianzibingli from '@/views/modules/dianzibingli/list'
+    import jiankangdangan from '@/views/modules/jiankangdangan/list'
 
 
 //2.配置路由   注意：名字
@@ -112,6 +113,11 @@ const routes = [{
         name: '电子病例',
         component: dianzibingli
       }
+      ,{
+    path: '/jiankangdangan',
+        name: '居民健康档案',
+        component: jiankangdangan
+      },
     ]
   },
   {

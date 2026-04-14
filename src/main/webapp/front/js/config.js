@@ -33,7 +33,11 @@ var centerMenu = [
         url: '../' + currentUserTable + '/center.html'
     },
     {
-        name: '预约上门',
+        name: '诊疗管理',
+        url: '../zhenliaoguanli/index.html'
+    },
+    {
+        name: '预约记录',
         url: '../yuyuexinxi/list.html'
     },
     {
@@ -59,12 +63,12 @@ if (currentUserTable === 'yisheng') {
 
 var indexNav = [
     {
-        name: '社区医生',
+        name: '医生团队',
         url: './pages/yisheng/list.html'
     },
     {
-        name: '预约上门',
-        url: './pages/yuyuexinxi/add.html'
+        name: '诊疗管理',
+        url: './pages/zhenliaoguanli/index.html'
     },
     {
         name: '社区公告',

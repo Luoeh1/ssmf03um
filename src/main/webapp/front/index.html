@@ -127,8 +127,8 @@
 					<a :href="'javascript:navPage(\''+item.url+'\')'">{{item.name}}</a>
 				</li>
 				<li><a href="javascript:centerPage();">个人中心</a></li>
-				<li v-if="Token"><a href="javascript:void(0);" @click="logout()">退出登录</a></li>
-				<li v-else><a href="./pages/login/login.html">.html">登录系统</a></li>
+				<li v-if="Token"><a href="javascript:void(0);" onclick="vue.logout()">退出登录</a></li>
+				<li v-else><a href="./pages/login/login.html">登录系统</a></li>
 				<li><a href="javascript:void(0);" @click="goAdmin()">后台管理</a></li>
 			</ul>
 		</div>
@@ -144,6 +144,12 @@
 <script src="./js/config.js"></script>
 
 <script>
+	// 初始化layui弹窗（必须加，防止弹窗失效）
+	layui.use('layer', function(){
+		window.layer = layui.layer;
+	});
+
+
 	var vue = new Vue({
 		el: '#header',
 		data: {
@@ -152,18 +158,21 @@
 			adminurl: adminurl,
 			chatFlag: chatFlag,
 			projectName: projectName,
-			Token: localStorage.getItem('Token')
+			Token: '' // 初始化为空，改为响应式赋值
 		},
 		mounted: function() {
-			this.bindClickOnLi();
+			this.Token = localStorage.getItem('Token');
+			this.setNavActive(); // 替换为原生JS绑定
 		},
 		methods: {
-			bindClickOnLi() {
+			// 替换原bindClickOnLi方法
+			setNavActive() {
 				let list = document.querySelectorAll(".nav-menu ul li");
 				list.forEach(item => {
-					item.onclick = function() {
-						$(this).addClass("current").siblings().removeClass("current");
-					}
+					item.addEventListener('click', () => {
+						list.forEach(el => el.classList.remove("current"));
+						item.classList.add("current");
+					});
 				});
 			},
 			goAdmin() {

@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>预约上门详情</title>
+    <title>预约详情</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" href="../../layui/css/layui.css">
     <style>
@@ -12,7 +12,10 @@
         .breadcrumb a { color: #0f766e; text-decoration: none; }
         .detail-card { background: #fff; border-radius: 24px; box-shadow: 0 16px 40px rgba(15,23,42,0.08); overflow: hidden; }
         .header { padding: 30px; background: linear-gradient(135deg, #06b6d4 0%, #0f766e 100%); color: #fff; }
+        .header.clinic { background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%); }
         .header h1 { margin: 0 0 10px; font-size: 30px; }
+        .header-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+        .type-chip { display: inline-block; padding: 6px 14px; border-radius: 999px; font-size: 13px; font-weight: 700; background: rgba(255,255,255,0.16); }
         .status { display: inline-block; padding: 6px 14px; border-radius: 999px; font-size: 13px; font-weight: 700; background: rgba(255,255,255,0.18); }
         .content { padding: 28px; }
         .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
@@ -31,22 +34,29 @@
         <a href="javascript:window.history.back();"><i class="layui-icon layui-icon-left"></i> 返回预约记录</a>
     </div>
     <div class="detail-card">
-        <div class="header">
-            <h1>{{detail.fuwuleixing || detail.xiangmumingcheng || '预约上门'}}</h1>
-            <div class="status">{{detail.sfsh == '是' ? '审核通过' : (detail.sfsh == '否' ? '审核未通过' : '待审核')}}</div>
+        <div class="header" :class="{clinic: recordType === 'clinic'}">
+            <div class="header-top">
+                <div>
+                    <div class="type-chip">{{recordTypeLabel}}</div>
+                    <h1>{{detail.fuwuleixing || detail.xiangmumingcheng || '预约详情'}}</h1>
+                </div>
+                <div class="status">{{detail.sfsh == '是' ? '审核通过' : (detail.sfsh == '否' ? '审核未通过' : '待审核')}}</div>
+            </div>
         </div>
         <div class="content">
             <div class="grid">
                 <div class="item"><span class="label">预约编号</span><div class="val">{{detail.yuyuebianhao || '--'}}</div></div>
                 <div class="item"><span class="label">预约时间</span><div class="val">{{detail.yuyueshijian || '--'}}</div></div>
+                <div class="item"><span class="label">预约类型</span><div class="val">{{recordTypeLabel}}</div></div>
+                <div class="item"><span class="label">{{recordType === 'home' ? '服务类型' : '诊疗分类'}}</span><div class="val">{{recordType === 'home' ? (detail.fuwuleixing || '--') : (detail.xiangmufenlei || '--')}}</div></div>
                 <div class="item"><span class="label">用户账号</span><div class="val">{{detail.yonghuzhanghao || '--'}}</div></div>
                 <div class="item"><span class="label">用户姓名</span><div class="val">{{detail.yonghuxingming || '--'}}</div></div>
-                <div class="item"><span class="label">联系电话</span><div class="val">{{detail.shouji || '--'}}</div></div>
+                <div class="item" v-if="recordType === 'home'"><span class="label">联系电话</span><div class="val">{{detail.shouji || '--'}}</div></div>
                 <div class="item"><span class="label">接诊医生</span><div class="val">{{detail.yishengxingming || '--'}}<span v-if="detail.yishenggonghao">（{{detail.yishenggonghao}}）</span></div></div>
-                <div class="item" style="grid-column: 1 / -1;"><span class="label">上门地址</span><div class="val">{{detail.shangmendizhi || detail.xiangmuweizhi || '--'}}</div></div>
-                <div class="item"><span class="label">服务费用</span><div class="val">{{detail.feiyong ? ('￥' + detail.feiyong) : '待确认'}}</div></div>
+                <div class="item" style="grid-column: 1 / -1;"><span class="label">{{recordType === 'home' ? '上门地址' : '就诊地点'}}</span><div class="val">{{detail.shangmendizhi || detail.xiangmuweizhi || '--'}}</div></div>
+                <div class="item"><span class="label">费用信息</span><div class="val">{{detail.feiyong ? ('￥' + detail.feiyong) : '待确认'}}</div></div>
                 <div class="item"><span class="label">支付状态</span><div class="val">{{detail.ispay || '未支付'}}</div></div>
-                <div class="item" style="grid-column: 1 / -1;"><span class="label">需求说明</span><div class="val">{{detail.yuyueneirong || '未填写'}}</div></div>
+                <div class="item" v-if="recordType === 'home'" style="grid-column: 1 / -1;"><span class="label">需求说明</span><div class="val">{{detail.yuyueneirong || '未填写'}}</div></div>
             </div>
             <div class="block" v-if="detail.shhf">
                 <h3>医生回复</h3>
@@ -64,7 +74,15 @@
 <script>
     var vue = new Vue({
         el: '#app',
-        data: { detail: {} }
+        data: { detail: {} },
+        computed: {
+            recordType: function() {
+                return (this.detail.xiangmufenlei === '预约上门' || this.detail.shangmendizhi || this.detail.fuwuleixing) ? 'home' : 'clinic';
+            },
+            recordTypeLabel: function() {
+                return this.recordType === 'home' ? '预约上门' : '诊疗预约';
+            }
+        }
     });
 
     layui.use(['http'], function() {
