@@ -63,7 +63,7 @@ if (currentUserTable === 'yisheng') {
 
 var indexNav = [
     {
-        name: '医生团队',
+        name: '社区医生',
         url: './pages/yisheng/list.html'
     },
     {
@@ -89,7 +89,7 @@ var menu = [
             { "child": [{ "appFrontIcon": "cuIcon-wenzi", "buttons": ["新增", "查看", "修改", "删除"], "menu": "医生", "menuJump": "列表", "tableName": "yisheng" }], "menu": "医生管理" },
             { "child": [{ "appFrontIcon": "cuIcon-camera", "buttons": ["新增", "查看", "修改", "删除"], "menu": "诊疗分类", "menuJump": "列表", "tableName": "xiangmufenlei" }], "menu": "诊疗分类管理" },
             { "child": [{ "appFrontIcon": "cuIcon-news", "buttons": ["新增", "查看", "修改", "删除"], "menu": "上门服务", "menuJump": "列表", "tableName": "xiangmuxinxi" }], "menu": "社区服务管理" },
-            { "child": [{ "appFrontIcon": "cuIcon-keyboard", "buttons": ["查看", "修改", "删除"], "menu": "预约上门", "menuJump": "列表", "tableName": "yuyuexinxi" }], "menu": "预约上门管理" },
+            { "child": [{ "appFrontIcon": "cuIcon-keyboard", "buttons": ["查看", "修改", "删除"], "menu": "预约", "menuJump": "列表", "tableName": "yuyuexinxi" }], "menu": "预约管理" },
             { "child": [{ "appFrontIcon": "cuIcon-present", "buttons": ["查看", "修改", "删除"], "menu": "检查信息", "menuJump": "列表", "tableName": "jianchaxinxi" }], "menu": "检查信息管理" },
             { "child": [{ "appFrontIcon": "cuIcon-goodsnew", "buttons": ["查看", "修改", "删除"], "menu": "检查报告", "menuJump": "列表", "tableName": "jianchabaogao" }], "menu": "检查报告管理" },
             { "child": [{ "appFrontIcon": "cuIcon-circle", "buttons": ["新增", "查看", "修改", "删除"], "menu": "药品分类", "menuJump": "列表", "tableName": "yaopinfenlei" }], "menu": "药品分类管理" },
@@ -109,7 +109,7 @@ var menu = [
     },
     {
         "backMenu": [
-            { "child": [{ "appFrontIcon": "cuIcon-keyboard", "buttons": ["查看", "支付"], "menu": "预约上门", "menuJump": "列表", "tableName": "yuyuexinxi" }], "menu": "预约上门管理" },
+            { "child": [{ "appFrontIcon": "cuIcon-keyboard", "buttons": ["查看", "支付"], "menu": "预约", "menuJump": "列表", "tableName": "yuyuexinxi" }], "menu": "预约管理" },
             { "child": [{ "appFrontIcon": "cuIcon-present", "buttons": ["查看"], "menu": "检查信息", "menuJump": "列表", "tableName": "jianchaxinxi" }], "menu": "检查信息管理" },
             { "child": [{ "appFrontIcon": "cuIcon-goodsnew", "buttons": ["查看"], "menu": "检查报告", "menuJump": "列表", "tableName": "jianchabaogao" }], "menu": "检查报告管理" },
             { "child": [{ "appFrontIcon": "cuIcon-vipcard", "buttons": ["查看", "支付"], "menu": "药品信息", "menuJump": "列表", "tableName": "yaopinxinxi" }], "menu": "药品信息管理" },
@@ -128,7 +128,7 @@ var menu = [
     {
         "backMenu": [
             { "child": [{ "appFrontIcon": "cuIcon-phone", "buttons": ["查看", "修改"], "menu": "患者信息", "menuJump": "列表", "tableName": "yonghu" }], "menu": "患者档案管理" },
-            { "child": [{ "appFrontIcon": "cuIcon-keyboard", "buttons": ["查看", "审核", "检查"], "menu": "预约上门", "menuJump": "列表", "tableName": "yuyuexinxi" }], "menu": "预约上门管理" },
+            { "child": [{ "appFrontIcon": "cuIcon-keyboard", "buttons": ["查看", "审核", "检查"], "menu": "预约", "menuJump": "列表", "tableName": "yuyuexinxi" }], "menu": "预约管理" },
             { "child": [{ "appFrontIcon": "cuIcon-present", "buttons": ["查看", "检查报告"], "menu": "检查信息", "menuJump": "列表", "tableName": "jianchaxinxi" }], "menu": "检查信息管理" },
             { "child": [{ "appFrontIcon": "cuIcon-goodsnew", "buttons": ["查看", "打印", "开药"], "menu": "检查报告", "menuJump": "列表", "tableName": "jianchabaogao" }], "menu": "检查报告管理" },
             { "child": [{ "appFrontIcon": "cuIcon-vipcard", "buttons": ["查看"], "menu": "药品信息", "menuJump": "列表", "tableName": "yaopinxinxi" }], "menu": "药品信息管理" },

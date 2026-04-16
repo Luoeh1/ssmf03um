@@ -6,8 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" href="../../layui/css/layui.css">
     <style>
-        body, html { margin: 0; padding: 0; background: #f6fbfa; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; min-height: 100vh; }
-        .list-container { max-width: 1380px; margin: 0 auto; padding: 30px 20px; box-sizing: border-box; }
+        body, html {
+            margin: 0;
+            padding: 0;
+            background: #f6fbfa;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            height: auto;       /* 必须是 auto */
+            min-height: 0;      /* 彻底取消 100vh */
+        }
+        .list-container {
+            max-width: 1380px;
+            margin: 0 auto;
+            padding: 30px 20px;
+            box-sizing: border-box;
+            min-height: 500px; /* 给一个固定的最小高度，而不是动态的 vh */
+        }
         .page-title { font-size: 24px; color: #0f172a; font-weight: 700; margin-bottom: 22px; display: flex; align-items: center; }
         .page-title::before { content: ''; width: 6px; height: 22px; border-radius: 999px; background: linear-gradient(135deg, #06b6d4 0%, #0f766e 100%); margin-right: 12px; }
         .search-bar { background: #fff; border-radius: 18px; padding: 20px 24px; display: flex; gap: 14px; flex-wrap: wrap; box-shadow: 0 8px 24px rgba(15,23,42,0.06); margin-bottom: 26px; }
@@ -127,7 +140,12 @@
                     : (item.xiangmufenlei || '--');
             },
             pay(item) {
-                layui.layer.confirm('确认支付 ￥' + item.feiyong + ' 吗？', { icon: 3, title: '支付提示' }, function(index) {
+                layui.layer.confirm('确认支付 ￥' + item.feiyong + ' 吗？', {
+                    icon: 3,
+                    title: '支付提示',
+                    offset: '150px', // 固定位置，防止它触发高度重绘
+                    fixed: true      // 锁定在屏幕上
+                }, function(index) {
                     var data = JSON.parse(JSON.stringify(item));
                     data.ispay = '已支付';
                     layui.http.requestJson('yuyuexinxi/update', 'post', data, function() {
