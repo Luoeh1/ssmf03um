@@ -92,6 +92,25 @@ public class YishengEntity<T> implements Serializable {
 	 */
 					
 	private String dianhuahaoma;
+	// ========== 在这里新增 医生介绍 字段 ==========
+	/**
+	 * 医生介绍
+	 */
+	private String yishengjieshao;
+
+	/**
+	 * 设置：医生介绍
+	 */
+	public void setYishengjieshao(String yishengjieshao) {
+		this.yishengjieshao = yishengjieshao;
+	}
+	/**
+	 * 获取：医生介绍
+	 */
+	public String getYishengjieshao() {
+		return yishengjieshao;
+	}
+	// ===========================================
 	
 	
 	@JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm:ss")
