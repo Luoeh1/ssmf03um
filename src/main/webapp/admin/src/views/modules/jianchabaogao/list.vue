@@ -436,31 +436,46 @@ export default {
       this.showFlag = false;
       this.addOrUpdateFlag = false;
       this.yaopinxinxiCrossAddOrUpdateFlag = true;
-      this.$storage.set('crossObj',row);
+
+      // 【修改点 1】：克隆一份数据，把里面的 id 删掉，防止传到开药表单里
+      let crossRowData = JSON.parse(JSON.stringify(row));
+      delete crossRowData.id;
+      this.$storage.set('crossObj', crossRowData);
+      // 原来的代码是：this.$storage.set('crossObj',row); 请将其替换为上面三行
+
       this.$storage.set('crossTable','jianchabaogao');
       this.$storage.set('statusColumnName',statusColumnName);
       this.$storage.set('statusColumnValue',statusColumnValue);
       this.$storage.set('tips',tips);
-	if(statusColumnName!=''&&!statusColumnName.startsWith("[")) {
-		var obj = this.$storage.getObj('crossObj');
-		for (var o in obj){
-		  if(o==statusColumnName && obj[o]==statusColumnValue){
-		    this.$message({
-		      message: tips,
-		      type: "success",
-		      duration: 1500,
-		      onClose: () => {
-			this.getDataList();
-		      }
-		    });
-		      this.showFlag = true;
-		      this.yaopinxinxiCrossAddOrUpdateFlag = false;
-			return;
-		  }
-		}
-	}
+      if(statusColumnName!=''&&!statusColumnName.startsWith("[")) {
+        var obj = this.$storage.getObj('crossObj');
+        for (var o in obj){
+          if(o==statusColumnName && obj[o]==statusColumnValue){
+            this.$message({
+              message: tips,
+              type: "success",
+              duration: 1500,
+              onClose: () => {
+                this.getDataList();
+              }
+            });
+            this.showFlag = true;
+            this.yaopinxinxiCrossAddOrUpdateFlag = false;
+            return;
+          }
+        }
+      }
       this.$nextTick(() => {
-      this.$refs.yaopinxinxiCrossaddOrUpdate.init(row.id,type);
+        // 强制按“新增”逻辑初始化弹窗
+        this.$refs.yaopinxinxiCrossaddOrUpdate.init('', type);
+
+        // 增加下面这段：延迟100毫秒，强行把当前行的患者和医生信息塞给开药表单
+        setTimeout(() => {
+          this.$refs.yaopinxinxiCrossaddOrUpdate.ruleForm.yonghuzhanghao = row.yonghuzhanghao;
+          this.$refs.yaopinxinxiCrossaddOrUpdate.ruleForm.yonghuxingming = row.yonghuxingming;
+          this.$refs.yaopinxinxiCrossaddOrUpdate.ruleForm.yishenggonghao = row.yishenggonghao;
+          this.$refs.yaopinxinxiCrossaddOrUpdate.ruleForm.yishengxingming = row.yishengxingming;
+        }, 100);
       });
     },
     init () {

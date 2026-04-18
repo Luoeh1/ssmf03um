@@ -190,6 +190,10 @@ export default {
         yaopinfenlei : false,
         jixing : false,
         feiyong : false,
+        yishenggonghao : false, // 新增
+        yishengxingming : false, // 新增
+        yonghuzhanghao : false,  // 新增
+        yonghuxingming : false,  // 新增
         ispay : false,
         xiangxijieshao : false,
       },
@@ -199,6 +203,11 @@ export default {
         yaopinfenlei: '',
         jixing: '',
         feiyong: '',
+        yishenggonghao: '', // 新增
+        yishengxingming: '', // 新增
+        yonghuzhanghao: '',  // 新增
+        yonghuxingming: '',  // 新增
+        ispay: '未支付',     // 新增，默认未支付
         xiangxijieshao: '',
       },
       yaopinfenleiOptions: [],
@@ -271,6 +280,26 @@ export default {
           if(o=='feiyong'){
             this.ruleForm.feiyong = obj[o];
             this.ro.feiyong = true;
+            continue;
+          }
+          if(o=='yishenggonghao'){
+            this.ruleForm.yishenggonghao = obj[o];
+            this.ro.yishenggonghao = true;
+            continue;
+          }
+          if(o=='yishengxingming'){
+            this.ruleForm.yishengxingming = obj[o];
+            this.ro.yishengxingming = true;
+            continue;
+          }
+          if(o=='yonghuzhanghao'){
+            this.ruleForm.yonghuzhanghao = obj[o];
+            this.ro.yonghuzhanghao = true;
+            continue;
+          }
+          if(o=='yonghuxingming'){
+            this.ruleForm.yonghuxingming = obj[o];
+            this.ro.yonghuxingming = true;
             continue;
           }
           if(o=='xiangxijieshao'){

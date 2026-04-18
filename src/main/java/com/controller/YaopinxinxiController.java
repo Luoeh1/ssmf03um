@@ -57,21 +57,30 @@ public class YaopinxinxiController {
     /**
      * 后端列表
      */
-    @RequestMapping("/page")
-    public R page(@RequestParam Map<String, Object> params,YaopinxinxiEntity yaopinxinxi, 
-		HttpServletRequest request){
+	@RequestMapping("/page")
+	public R page(@RequestParam Map<String, Object> params, YaopinxinxiEntity yaopinxinxi, HttpServletRequest request){
+		EntityWrapper<YaopinxinxiEntity> ew = new EntityWrapper<YaopinxinxiEntity>();
 
-		String tableName = request.getSession().getAttribute("tableName").toString();
-		if(tableName.equals("yisheng")) {
-			yaopinxinxi.setYishenggonghao((String)request.getSession().getAttribute("username"));
+		// 1. 获取当前登录用户的角色
+		String role = String.valueOf(request.getSession().getAttribute("role"));
+		// 2. 获取当前登录用户的账号
+		String username = String.valueOf(request.getSession().getAttribute("username"));
+
+		// 3. 核心逻辑：如果是“用户”登录，必须强制加上 yonghuzhanghao 的过滤条件
+		// 注意：这里的 "用户" 字符串要和你数据库/menu.js里的角色名一致
+		if("用户".equals(role)) {
+			ew.eq("yonghuzhanghao", username);
 		}
-		if(tableName.equals("yonghu")) {
-			yaopinxinxi.setYonghuzhanghao((String)request.getSession().getAttribute("username"));
+
+		// 4. 如果是“医生”登录，通常只能看到自己开出去的药（可选）
+		if("医生".equals(role)) {
+			ew.eq("yishenggonghao", username);
 		}
-        EntityWrapper<YaopinxinxiEntity> ew = new EntityWrapper<YaopinxinxiEntity>();
+
+		// 调用底层的 page 查询，将 ew (也就是 WHERE 条件) 传进去
 		PageUtils page = yaopinxinxiService.queryPage(params, MPUtil.sort(MPUtil.between(MPUtil.likeOrEq(ew, yaopinxinxi), params), params));
-        return R.ok().put("data", page);
-    }
+		return R.ok().put("data", page);
+	}
     
     /**
      * 前端列表

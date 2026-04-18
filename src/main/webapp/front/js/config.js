@@ -51,6 +51,10 @@ var centerMenu = [
     {
         name: '电子病历',
         url: '../dianzibingli/list.html'
+    },
+    {
+        name: '我的药单',
+        url: '../yaopinxinxi/list.html'
     }
 ]
 
