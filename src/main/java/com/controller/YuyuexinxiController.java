@@ -62,18 +62,21 @@ public class YuyuexinxiController {
 
 		String tableName = request.getSession().getAttribute("tableName").toString();
 
-		// 医生只能看到自己开的药（系统原本有的）
+		// 医生只能看自己的
 		if(tableName.equals("yisheng")) {
 			yaopinxinxi.setYishenggonghao((String)request.getSession().getAttribute("username"));
 		}
 
-		// ▼▼▼ 新加这三行：患者(用户)只能看到自己的药 ▼▼▼
-		if(tableName.equals("yonghu")) {
-			yaopinxinxi.setYonghuzhanghao((String)request.getSession().getAttribute("username"));
-		}
-		// ▲▲▲ 新加这三行结束 ▲▲▲
-
+		// 初始化条件包装器
 		EntityWrapper<YaopinxinxiEntity> ew = new EntityWrapper<YaopinxinxiEntity>();
+
+		// ▼▼▼ 关键修改：不要用 yaopinxinxi.set... ，直接用 ew.eq 操作数据库字段 ▼▼▼
+		if(tableName.equals("yonghu")) {
+			ew.eq("yonghuzhanghao", (String)request.getSession().getAttribute("username"));
+		}
+		// ▲▲▲ 修改结束 ▲▲▲
+
+		// 下面这行系统自带的代码保持不变
 		PageUtils page = yaopinxinxiService.queryPage(params, MPUtil.sort(MPUtil.between(MPUtil.likeOrEq(ew, yaopinxinxi), params), params));
 		return R.ok().put("data", page);
 	}
