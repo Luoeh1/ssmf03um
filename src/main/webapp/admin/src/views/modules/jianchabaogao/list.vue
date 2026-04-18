@@ -95,7 +95,7 @@
                 width="50">
             </el-table-column>
             <el-table-column label="索引" :align="contents.tableAlign"  v-if="contents.tableIndex" type="index" width="50" />
-                <el-table-column  :sortable="contents.tableSortable" :align="contents.tableAlign" 
+                <el-table-column  :sortable="contents.tableSortable" :align="contents.tableAlign"
                     prop="baogaobianhao"
                    :header-align="contents.tableAlign"
 		    label="报告编号">
@@ -103,7 +103,7 @@
                        {{scope.row.baogaobianhao}}
                      </template>
                 </el-table-column>
-                <el-table-column  :sortable="contents.tableSortable" :align="contents.tableAlign" 
+                <el-table-column  :sortable="contents.tableSortable" :align="contents.tableAlign"
                     prop="xiangmumingcheng"
                    :header-align="contents.tableAlign"
 		    label="诊疗名称">
@@ -111,7 +111,7 @@
                        {{scope.row.xiangmumingcheng}}
                      </template>
                 </el-table-column>
-                <el-table-column  :sortable="contents.tableSortable" :align="contents.tableAlign" 
+                <el-table-column  :sortable="contents.tableSortable" :align="contents.tableAlign"
                     prop="xiangmufenlei"
                    :header-align="contents.tableAlign"
 		    label="诊疗分类">
@@ -119,7 +119,7 @@
                        {{scope.row.xiangmufenlei}}
                      </template>
                 </el-table-column>
-                <el-table-column  :sortable="contents.tableSortable" :align="contents.tableAlign" 
+                <el-table-column  :sortable="contents.tableSortable" :align="contents.tableAlign"
                     prop="zhenduanshijian"
                    :header-align="contents.tableAlign"
 		    label="诊断时间">
@@ -127,7 +127,7 @@
                        {{scope.row.zhenduanshijian}}
                      </template>
                 </el-table-column>
-                <el-table-column  :sortable="contents.tableSortable" :align="contents.tableAlign" 
+                <el-table-column  :sortable="contents.tableSortable" :align="contents.tableAlign"
                     prop="yishenggonghao"
                    :header-align="contents.tableAlign"
 		    label="医生工号">
@@ -135,7 +135,7 @@
                        {{scope.row.yishenggonghao}}
                      </template>
                 </el-table-column>
-                <el-table-column  :sortable="contents.tableSortable" :align="contents.tableAlign" 
+                <el-table-column  :sortable="contents.tableSortable" :align="contents.tableAlign"
                     prop="yishengxingming"
                    :header-align="contents.tableAlign"
 		    label="医生姓名">
@@ -143,7 +143,7 @@
                        {{scope.row.yishengxingming}}
                      </template>
                 </el-table-column>
-                <el-table-column  :sortable="contents.tableSortable" :align="contents.tableAlign" 
+                <el-table-column  :sortable="contents.tableSortable" :align="contents.tableAlign"
                     prop="yonghuzhanghao"
                    :header-align="contents.tableAlign"
 		    label="用户账号">
@@ -151,7 +151,7 @@
                        {{scope.row.yonghuzhanghao}}
                      </template>
                 </el-table-column>
-                <el-table-column  :sortable="contents.tableSortable" :align="contents.tableAlign" 
+                <el-table-column  :sortable="contents.tableSortable" :align="contents.tableAlign"
                     prop="yonghuxingming"
                    :header-align="contents.tableAlign"
 		    label="用户姓名">
@@ -159,7 +159,7 @@
                        {{scope.row.yonghuxingming}}
                      </template>
                 </el-table-column>
-            <el-table-column width="300" :align="contents.tableAlign" 
+            <el-table-column width="300" :align="contents.tableAlign"
                :header-align="contents.tableAlign"
                 label="操作">
                 <template slot-scope="scope">
@@ -437,16 +437,16 @@ export default {
       this.addOrUpdateFlag = false;
       this.yaopinxinxiCrossAddOrUpdateFlag = true;
 
-      // 【修改点 1】：克隆一份数据，把里面的 id 删掉，防止传到开药表单里
+      // 1. 克隆数据，去除 ID 避免主键冲突
       let crossRowData = JSON.parse(JSON.stringify(row));
       delete crossRowData.id;
       this.$storage.set('crossObj', crossRowData);
-      // 原来的代码是：this.$storage.set('crossObj',row); 请将其替换为上面三行
 
       this.$storage.set('crossTable','jianchabaogao');
       this.$storage.set('statusColumnName',statusColumnName);
       this.$storage.set('statusColumnValue',statusColumnValue);
       this.$storage.set('tips',tips);
+
       if(statusColumnName!=''&&!statusColumnName.startsWith("[")) {
         var obj = this.$storage.getObj('crossObj');
         for (var o in obj){
@@ -466,16 +466,30 @@ export default {
         }
       }
       this.$nextTick(() => {
-        // 强制按“新增”逻辑初始化弹窗
+        // 强制按“新增”逻辑初始化子组件弹窗
         this.$refs.yaopinxinxiCrossaddOrUpdate.init('', type);
 
-        // 增加下面这段：延迟100毫秒，强行把当前行的患者和医生信息塞给开药表单
+        // 【关键修复核心】：
+        // 1. 将延迟提升至 350ms，确保子组件内部的接口请求和数据挂载已完全结束
+        // 2. 使用 Vue 的 this.$set 进行响应式赋值，强制让表单双向绑定生效，不再漏掉字段
         setTimeout(() => {
-          this.$refs.yaopinxinxiCrossaddOrUpdate.ruleForm.yonghuzhanghao = row.yonghuzhanghao;
-          this.$refs.yaopinxinxiCrossaddOrUpdate.ruleForm.yonghuxingming = row.yonghuxingming;
-          this.$refs.yaopinxinxiCrossaddOrUpdate.ruleForm.yishenggonghao = row.yishenggonghao;
-          this.$refs.yaopinxinxiCrossaddOrUpdate.ruleForm.yishengxingming = row.yishengxingming;
-        }, 100);
+          let childForm = this.$refs.yaopinxinxiCrossaddOrUpdate.ruleForm;
+          if(!childForm) {
+            this.$refs.yaopinxinxiCrossaddOrUpdate.ruleForm = {};
+            childForm = this.$refs.yaopinxinxiCrossaddOrUpdate.ruleForm;
+          }
+
+          // 强制关联患者信息
+          this.$set(childForm, 'yonghuzhanghao', row.yonghuzhanghao);
+          this.$set(childForm, 'yonghuxingming', row.yonghuxingming);
+          // 强制关联医生信息
+          this.$set(childForm, 'yishenggonghao', row.yishenggonghao);
+          this.$set(childForm, 'yishengxingming', row.yishengxingming);
+
+          // 给数据库必填项加上默认值，防报错
+          this.$set(childForm, 'ispay', '未支付');
+
+        }, 350);
       });
     },
     init () {
@@ -667,11 +681,11 @@ export default {
       }
     }
   }
-  
+
 
   .el-button+.el-button {
     margin:0;
-  } 
+  }
 
   .tables {
 	& ::v-deep .el-button--success {
@@ -684,7 +698,7 @@ export default {
 		border-radius: 4px;
 		background-color: #fff;
 	}
-	
+
 	& ::v-deep .el-button--primary {
 		height: 40px;
 		color: rgba(249, 97, 151, 1);
@@ -695,7 +709,7 @@ export default {
 		border-radius: 4px;
 		background-color: #fff;
 	}
-	
+
 	& ::v-deep .el-button--danger {
 		height: 40px;
 		color: rgba(249, 104, 104, 1);
@@ -717,7 +731,7 @@ export default {
 	.table-content {
 		background: transparent;
 	}
-	
+
 	.tables ::v-deep .el-table__body tr {
 				background-color: #f5f5f5 !important;
 				color: rgba(72, 72, 72, 1) !important;
@@ -729,10 +743,10 @@ export default {
 		background-color: rgba(252, 253, 254, 1) !important;
 		color: #606266 !important;
 	}
-	
+
 	 .tables ::v-deep .el-table__body tr:hover>td {
 	   	   background-color: #f5f5f5 !important;
 	   	   	   color: #333 !important;
 	   	 }
-	 
+
 </style>
