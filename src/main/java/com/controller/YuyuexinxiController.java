@@ -57,21 +57,26 @@ public class YuyuexinxiController {
     /**
      * 后端列表
      */
-    @RequestMapping("/page")
-    public R page(@RequestParam Map<String, Object> params,YuyuexinxiEntity yuyuexinxi, 
-		HttpServletRequest request){
+	@RequestMapping("/page")
+	public R page(@RequestParam Map<String, Object> params,YaopinxinxiEntity yaopinxinxi, HttpServletRequest request){
 
 		String tableName = request.getSession().getAttribute("tableName").toString();
-		if(tableName.equals("yonghu")) {
-			yuyuexinxi.setYonghuzhanghao((String)request.getSession().getAttribute("username"));
-		}
+
+		// 医生只能看到自己开的药（系统原本有的）
 		if(tableName.equals("yisheng")) {
-			yuyuexinxi.setYishenggonghao((String)request.getSession().getAttribute("username"));
+			yaopinxinxi.setYishenggonghao((String)request.getSession().getAttribute("username"));
 		}
-        EntityWrapper<YuyuexinxiEntity> ew = new EntityWrapper<YuyuexinxiEntity>();
-		PageUtils page = yuyuexinxiService.queryPage(params, MPUtil.sort(MPUtil.between(MPUtil.likeOrEq(ew, yuyuexinxi), params), params));
-        return R.ok().put("data", page);
-    }
+
+		// ▼▼▼ 新加这三行：患者(用户)只能看到自己的药 ▼▼▼
+		if(tableName.equals("yonghu")) {
+			yaopinxinxi.setYonghuzhanghao((String)request.getSession().getAttribute("username"));
+		}
+		// ▲▲▲ 新加这三行结束 ▲▲▲
+
+		EntityWrapper<YaopinxinxiEntity> ew = new EntityWrapper<YaopinxinxiEntity>();
+		PageUtils page = yaopinxinxiService.queryPage(params, MPUtil.sort(MPUtil.between(MPUtil.likeOrEq(ew, yaopinxinxi), params), params));
+		return R.ok().put("data", page);
+	}
     
     /**
      * 前端列表
